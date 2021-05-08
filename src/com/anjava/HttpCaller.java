@@ -17,55 +17,15 @@ import okhttp3.Response;
 
 public class HttpCaller {
 	
-	private String logIn = "https://anjava-api-server.herokuapp.com/users/";
-	private String sign = "https://anjava-api-server.herokuapp.com/users/sign";
-	private String createRoom = "https://anjava-api-server.herokuapp.com/room/";
-	private String room = "https://anjava-api-server.herokuapp.com/room/";
+	private String url = "https://anjava-api-server.herokuapp.com/";
+	// sign = url+"users/sign/"
+	// logIn = url+"users/"+{userId}
+	// room = url+"room/"
 	
 	private String id = "";
 	private String token = "";
 	private boolean isSuccessful = false;
 	
-//	    String run(String url) throws IOException {
-//	        Request request = new Request.Builder().url(url).build();
-//	 
-//	        Response response = client.newCall(request).execute();
-//	        return response.body().string();
-//	    }
-//	    
-//	    
-//	    public static void main(String[] args) throws IOException {
-//	        String url = "http://www.google.com";
-//	        String responseString = new HttpCaller().run(url);
-//	        System.out.println(responseString);
-//	    }
-	    
-//	    public static void whenPostJson_thenCorrect() throws IOException {
-//	    	
-//	   	 OkHttpClient client = new OkHttpClient();
-//	        String json = "{\"userId\":aio,\"password\":\"12341234\"}";
-//
-//	        RequestBody body = RequestBody.create(
-//	          MediaType.parse("application/json"), json);
-//
-//	        Request request = new Request.Builder()
-//	          .url("http://anjava.aio392.com/users")
-//	          .post(body)
-//	          .build();
-//	     
-//	        Call call = client.newCall(request);
-//	        Response response = call.execute();
-//	        
-//	        System.out.println(response.body().string());
-//	    }
-//	    
-//	    public static void main(String[] args) {
-//	    	try {
-//				whenPostJson_thenCorrect();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//	    }
 	private String request(String type, String requestURL, String jsonMessage) {
 		try{
 			OkHttpClient client = new OkHttpClient();
@@ -115,87 +75,16 @@ public class HttpCaller {
 		}
 	}
 	
-//	private String post(String requestURL, String jsonMessage) {
-//		try{
-//			OkHttpClient client = new OkHttpClient();
-//			Request request = new Request.Builder()
-//					.addHeader("Authorization", token)
-//					.url(requestURL)
-//					.post(RequestBody.create(jsonMessage, MediaType.parse("application/json; charset=utf-8"))) //POST로 요청
-//					.build();
-//                        //동기 처리시 execute함수 사용
-//			Response response = client.newCall(request).execute();
-//			
-//			this.isSuccessful = response.isSuccessful();
-//
-//			//출력
-//			String message = response.body().string();
-//			
-//			return message;
-//
-//		} catch (Exception e) {
-//			System.err.println(e.toString());
-//			return "API request and response failed";
-//		}
-//	}
-//	
-//	private String delete(String requestURL, String jsonMessage) {
-//		try{
-//			OkHttpClient client = new OkHttpClient();
-//			Request request = new Request.Builder()
-//					.addHeader("Authorization", token)
-//					.url(requestURL)
-//					.delete(RequestBody.create(jsonMessage, MediaType.parse("application/json; charset=utf-8"))) //POST로 요청
-//					.build();
-//                        //동기 처리시 execute함수 사용
-//			Response response = client.newCall(request).execute();
-//			
-//			this.isSuccessful = response.isSuccessful();
-//
-//			//출력
-//			String message = response.body().string();
-//			
-//			return message;
-//
-//		} catch (Exception e) {
-//			System.err.println(e.toString());
-//			return "API request and response failed";
-//		}
-//	}
-//	
-//	private String get(String requestURL) {
-//		try{
-//			OkHttpClient client = new OkHttpClient();
-//			Request request = new Request.Builder()
-//					.addHeader("Authorization", token)
-//					.url(requestURL)
-//					.build();
-//                        //동기 처리시 execute함수 사용
-//			Response response = client.newCall(request).execute();
-//			
-//			this.isSuccessful = response.isSuccessful();
-//
-//			//출력
-//			String message = response.body().string();
-//			
-//			return message;
-//
-//		} catch (Exception e) {
-//			System.err.println(e.toString());
-//			return "API request and response failed";
-//		}
-//	}
-	
 	public String getUserDetail() {
-		return this.request("GET", logIn+this.id, null);
+		return this.request("GET", url+"users/"+this.id, null);
 	}
 	
 	public String getOneRoom(int roomNum) {
-		return this.request("GET", room+String.valueOf(roomNum), null);
+		return this.request("GET", url+"room/"+String.valueOf(roomNum), null);
 	}
 	
 	public String getAllRoom(int roomNum) {
-		return this.request("GET", room, null);
+		return this.request("GET", url+"room/", null);
 	}
 	
 	public String postSign(String id, String pw, String name, int yNum, String email) {
@@ -206,11 +95,11 @@ public class HttpCaller {
 		jo.put("name", name);
 		jo.put("yjuNum", yNum);
 		jo.put("email", email);
-		return this.request("POST", sign, jo.toString());
+		return this.request("POST", url+"users/sign/", jo.toString());
 	}
 	
 	public String postLogIn(String id, String pw) {
-		String result = this.request("POST", logIn, "{\"userId\":\""+id+"\",\"password\":\""+pw+"\"}");
+		String result = this.request("POST", url+"users/", "{\"userId\":\""+id+"\",\"password\":\""+pw+"\"}");
 		if (isSuccessful) {
 			JSONObject jo = new JSONObject(result).getJSONObject("data");
 			this.id = id;
@@ -227,7 +116,7 @@ public class HttpCaller {
 		jo.put("row", row);
 		jo.put("rowBlankLine", Arrays.toString(rowBlank));
 		jo.put("colBlankLine", Arrays.toString(colBlank));
-		return this.request("POST", room, jo.toString());
+		return this.request("POST", url+"room/", jo.toString());
 	}
 	
 	public String postReserveRoom(int roomNum, int sitNum) {
@@ -235,7 +124,7 @@ public class HttpCaller {
 		
 		jo.put("sitNum", sitNum);
 		
-		return this.request("POST", room+roomNum+"/reserve", jo.toString());
+		return this.request("POST", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
 	
 	public String patchResetDateRoom(int roomNum, Date resetDate) {
@@ -245,15 +134,29 @@ public class HttpCaller {
 		jo.put("roomNum", roomNum);
 		jo.put("resetDate", df.format(resetDate));
 		
-		return this.request("PATCH", room+roomNum+"/reset", jo.toString());
+		return this.request("PATCH", url+"room/"+roomNum+"/reset", jo.toString());
 	}
 	
 	public String deleteReserveRoom(int roomNum, int sitNum) {
 		JSONObject jo = new JSONObject();
 		
+		
 		jo.put("sitNum", sitNum);
 		
-		return this.request("DELETE", room+roomNum+"/reserve", jo.toString());
+		return this.request("DELETE", url+"room/"+roomNum+"/reserve", jo.toString());
+	}
+	
+	public String deleteReserveRoom(int roomNum, String userId) {
+		JSONObject jo = new JSONObject();
+		
+		
+		jo.put("userId", userId);
+		
+		return this.request("DELETE", url+"room/"+roomNum+"/reserve", jo.toString());
+	}
+	
+	public String deleteReserveRoom(int roomNum) {
+		return this.request("DELETE", url+"room/"+roomNum+"/reserve", null);
 	}
 	
 	public boolean isLoggedIn() {

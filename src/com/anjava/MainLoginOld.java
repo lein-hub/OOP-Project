@@ -4,41 +4,30 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.*;
+
 import javax.swing.*;
+import javax.swing.border.*;
 
 
-
-
-public class MainLogin extends JFrame implements ActionListener{
-	JPanel logInPanel, signUpBtnPanel, logInLabelPanel, imagePanel, signUpMainPanel;
+public class MainLoginOld extends JFrame implements ActionListener{
+	JPanel logInPanel, signUpBtnPanel, logInLabelPanel;
 	JLabel[] logInLabels;
-	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel;
-	MainLogLabel mainLogLabel;
-	SignUpPanelLabel signUpPanelLabel;
+	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome;
 	JTextField ID;
 	JPasswordField PASSWORD;;
-	JButton logInBtn, signUpBtn, signUpBtn2, exitButton;
+	JButton logInBtn, signUpBtn, signUpBtn2;
 	LoggedInPanel loggedInPanel = new LoggedInPanel();
 	LoggedInPanel2 loggedInPanel2 = new LoggedInPanel2();
 	FakeDB fake = new FakeDB();
-	Font Title = new Font(null);
-	ImageIcon icon;
 	HttpCaller hc = new HttpCaller();
 	
-//	public void paint()
 	
-
-	
-	
-	public MainLogin(){
+	public MainLoginOld(){
 		
 		//Panel
 		 //LogInPanel
-
-		
-		icon = new ImageIcon();
 		logInPanel = new JPanel();
-		imagePanel = new JPanel();
+		
 		
 		//----------------------------------------------------------------------------------------------
 		
@@ -48,12 +37,12 @@ public class MainLogin extends JFrame implements ActionListener{
 		 //Main Title Label
 		mainTitle = new JLabel("영진 2WDJ 좌석 예약");
 		mainTitle.setBounds(155,-160,500,500);
-		mainTitle.setFont(new Font("여기어때 잘난체",Font.CENTER_BASELINE,45));
+		mainTitle.setFont(new Font(null,Font.CENTER_BASELINE,50));
 		
 		 //Sub Title Label
 		subTitle = new JLabel("Anjava");
 		subTitle.setBounds(365,-110,500,500);
-		subTitle.setFont(new Font("여기어때 잘난체",Font.BOLD,20));
+		subTitle.setFont(new Font(null,Font.BOLD,22));
 		
 		 //ID Label
 		idLabel = new JLabel("ID");
@@ -68,15 +57,6 @@ public class MainLogin extends JFrame implements ActionListener{
 		welcome.setBounds(5,-123,300,300);
 		welcome.setFont(new Font(null,Font.CENTER_BASELINE,30));
 		welcome.setVisible(false);
-		
-		 // 메인타이틀
-		mainLogLabel = new MainLogLabel("");
-		mainLogLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/mainlogin.jpg")));
-		mainLogLabel.setBounds(0, 0, 800, 500);
-//		BufferedImage image = new BufferedImage();
-		
-		 // 회원가입
-
 		
 		
 		//----------------------------------------------------------------------------------------------
@@ -100,23 +80,12 @@ public class MainLogin extends JFrame implements ActionListener{
 		 //LogIn Button
 		logInBtn = new JButton("로그인");
 		logInBtn.setBounds(85, 75, 80, 25);
-		logInBtn.setBackground(Color.LIGHT_GRAY);
 		logInBtn.addActionListener(this);
 		
 		 //SignUp Button
 		signUpBtn = new JButton("회원가입");
 		signUpBtn.setBounds(80, 110, 90, 25);
-		signUpBtn.setBackground(Color.PINK);
 		signUpBtn.addActionListener(this);
-		
-		// 종료버튼
-		exitButton = new JButton("");
-		exitButton.setBounds(770, 10, 20, 20);
-		exitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
 		
 		
 		//----------------------------------------------------------------------------------------------
@@ -124,10 +93,9 @@ public class MainLogin extends JFrame implements ActionListener{
 		
 		
 		//Panel Setting
-//		logInPanel.setBorder(new LineBorder(Color.red));
+		logInPanel.setBorder(new LineBorder(Color.blue));
 		logInPanel.setLayout(null);
-		logInPanel.setBounds(275, 220, 250, 150);
-		logInPanel.setBackground(new Color(255,255,255));
+		logInPanel.setBounds(275, 190, 250, 150);
 		logInPanel.add(ID);
 		logInPanel.add(PASSWORD);
 		logInPanel.add(idLabel);
@@ -136,52 +104,47 @@ public class MainLogin extends JFrame implements ActionListener{
 		logInPanel.add(signUpBtn);
 		
 		
-		
 		//----------------------------------------------------------------------------------------------
 		
 		
 		//Frame Setting
 		this.setLayout(null);
-//		this.add(mainTitle);
-//		this.add(subTitle);
+		this.add(mainTitle);
+		this.add(subTitle);
 		this.add(logInPanel);
-		this.add(imagePanel);
-		this.add(exitButton);
 		this.setTitle("Anjava(앉아봐)");
 		this.add(welcome);
-		this.add(mainLogLabel);
 		this.setSize(800,500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
-		this.setUndecorated(true);
 		this.setVisible(true);
 		
 			
 	}
-
-
+	
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-//		MainLogin logInfo = new MainLogin();
-		imagePanel.setVisible(true);
+		MainLoginOld logInfo = new MainLoginOld();
+		
+		
 		
 		//로그인 버튼 눌렀을 때
 		if(e.getSource()==logInBtn) {
 			hc.postLogIn(ID.getText(), PASSWORD.getText());
 			
-			if(hc.isLoggedIn()) {			
+			if(hc.isLoggedIn()) {
 //			if(ID.getText().equals(fake.userId)&&PASSWORD.getText().equals(fake.password)) {
-				logInPanel.setVisible(false);
-				mainTitle.setVisible(false);
-				subTitle.setVisible(false);
-				mainLogLabel.setVisible(false);
-				add(welcome);
-				add(loggedInPanel);
+				logInfo.logInPanel.setVisible(false);
+				logInfo.mainTitle.setVisible(false);
+				logInfo.subTitle.setVisible(false);
+				logInfo.add(welcome);
+				logInfo.add(loggedInPanel);
 				welcome.setVisible(true);
-				add(loggedInPanel2.reserve);
+				logInfo.add(loggedInPanel2.reserve);
 				
 				//Buttons
 				for(int i = 0; i < 12; i++) {
@@ -196,6 +159,7 @@ public class MainLogin extends JFrame implements ActionListener{
 														loggedInPanel.reserveBtn[i].setVisible(false);
 													}
 													loggedInPanel2.reserve.setVisible(false);
+													System.out.println(5496);
 												}
 											});
 					loggedInPanel.add(loggedInPanel.reserveBtn[i]);
@@ -211,19 +175,10 @@ public class MainLogin extends JFrame implements ActionListener{
 		//메인 화면에서 회원가입 버튼 눌렀을 때
 		if(e.getSource()==signUpBtn) {
 			
-//			JPanel signUpPagePanel = new JPanel();
-			
 			SignUpPanel signUpPanel = new SignUpPanel();
 			signUpBtnPanel = new JPanel();
 			
 			logInLabelPanel = new JPanel();
-			
-			signUpPanelLabel = new SignUpPanelLabel("");
-			signUpPanelLabel.setIcon(new ImageIcon(""));
-			signUpPanelLabel.setBounds(0, 0, 800, 500);
-//			reLabel = new JLabel(" ");
-//			reLabel.setIcon(new ImageIcon(""));
-//			reLabel.setBounds(0, 0, 800, 500);
 			
 			logInLabels = new JLabel[signUpPanel.categories.length];
 			for(int i = 0; i < signUpPanel.categories.length; i++) {
@@ -234,43 +189,28 @@ public class MainLogin extends JFrame implements ActionListener{
 			
 			
 			logInLabelPanel.setLayout(new GridLayout(6,0,10,10));
-			logInLabelPanel.setBounds(200,130,130,200);
-			logInLabelPanel.setBackground(Color.white);
+			logInLabelPanel.setBounds(90,100,200,200);
 			
 			
 			
 			signUpBtn2 = new JButton("회원가입");
-			signUpBtn2.setBackground(new Color(255,128,0));
 			signUpBtnPanel.add(signUpBtn2);
-			signUpBtnPanel.setBounds(350,350,100,40);
-			signUpBtnPanel.setBackground(Color.white);
-			
-			signUpMainPanel = new JPanel();
-			signUpMainPanel.setSize(400,300);
-//			signUpMainPanel.setBackground(Color.white);
-			signUpPanel.add(signUpMainPanel);
-			signUpBtnPanel.add(signUpMainPanel);
-//			logInLabelPanel.add(signUpMainPanel);
-			signUpMainPanel.setBounds(350,550,300,200);
-			
-//			signUpPagePanel.add(logInLabelPanel);
+			signUpBtnPanel.setBounds(347,310,100,40);
 			
 			signUpBtn2.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//회원가입 창에서 회원가입 버튼 눌렀을 때
 					
-					remove(signUpPanel);
+					logInfo.remove(signUpPanel);
 					
-					logInPanel.setVisible(true);
-					mainTitle.setVisible(true);
-					subTitle.setVisible(true);
+					logInfo.logInPanel.setVisible(true);
+					logInfo.mainTitle.setVisible(true);
+					logInfo.subTitle.setVisible(true);
 					for(int i = 0; i < signUpPanel.categories.length; i++) {
 						logInLabels[i].setVisible(false);
 					}
 					signUpBtn2.setVisible(false);
-					signUpPanelLabel.setVisible(false);
-					mainLogLabel.setVisible(true);
 					
 					JOptionPane.showInternalMessageDialog(null, "회원가입이 완료되었습니다.\n 다시 로그인 해주십시오.","회원가입 완료",1);
 				}				
@@ -279,21 +219,20 @@ public class MainLogin extends JFrame implements ActionListener{
 			
 			
 			
-			mainLogLabel.setVisible(false);
-			logInPanel.setVisible(false);
-			mainTitle.setVisible(false);
-			subTitle.setVisible(false);
+			
+			logInfo.logInPanel.setVisible(false);
+			logInfo.mainTitle.setVisible(false);
+			logInfo.subTitle.setVisible(false);
 			welcome.setVisible(false);
-//			System.out.println("나는 최강이다");
-			add(signUpPanelLabel);
-			add(logInLabelPanel);
-			add(signUpBtnPanel);
-			add(signUpPanel);
-			add(signUpPanelLabel);
+			
+			
+			logInfo.add(logInLabelPanel);
+			logInfo.add(signUpBtnPanel);
+			logInfo.add(signUpPanel);
 		}
 		
 	}
 	public static void main(String[] args) {
-		new MainLogin();
+		new MainLoginOld();
 	}
 }
