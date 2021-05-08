@@ -4,13 +4,13 @@ import java.awt.*;
 
 import javax.swing.*;
 
-class MainLogLabel extends JLabel {
+class AntialiasedLabel extends JLabel {
 	
 	
 
 	String text;
 
-    public MainLogLabel(String text) {
+    public AntialiasedLabel(String text) {
 		// TODO Auto-generated constructor stub
         super(text);
 

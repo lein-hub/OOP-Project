@@ -24,6 +24,11 @@ public class HttpCaller {
 	
 	private String id = "";
 	private String token = "";
+	private String name;
+	private boolean isAdmin;
+	private int yjuNum;
+	private String email;
+	
 	private boolean isSuccessful = false;
 	
 	private String request(String type, String requestURL, String jsonMessage) {
@@ -73,9 +78,7 @@ public class HttpCaller {
 			System.err.println(e.toString());
 			return "API request and response failed";
 		}
-	}
-	
-	public String getUserDetail() {
+	}public String getUserDetail() {
 		return this.request("GET", url+"users/"+this.id, null);
 	}
 	
@@ -104,6 +107,12 @@ public class HttpCaller {
 			JSONObject jo = new JSONObject(result).getJSONObject("data");
 			this.id = id;
 			this.token = jo.getString("token");
+			result = getUserDetail();
+			jo = new JSONObject(result).getJSONObject("data");
+			this.name = jo.getString("name");
+			this.isAdmin = jo.getBoolean("isAdmin");
+			this.yjuNum = jo.getInt("yjuNum");
+			this.email = jo.getString("email");
 		}
 		return result;
 	}
@@ -162,6 +171,21 @@ public class HttpCaller {
 	public boolean isLoggedIn() {
 		if (token.isEmpty()) return false;
 		return true;
+	}
+	public String getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+	public int getYjuNum() {
+		return yjuNum;
+	}
+	public String getEmail() {
+		return email;
 	}
 	
 }

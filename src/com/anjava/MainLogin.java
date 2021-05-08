@@ -6,6 +6,8 @@ import java.awt.GridLayout;
 import java.awt.event.*;
 import javax.swing.*;
 
+import org.json.JSONObject;
+
 
 
 
@@ -13,8 +15,7 @@ public class MainLogin extends JFrame implements ActionListener{
 	JPanel logInPanel, signUpBtnPanel, logInLabelPanel, imagePanel, signUpMainPanel;
 	JLabel[] logInLabels;
 	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel;
-	MainLogLabel mainLogLabel;
-	SignUpPanelLabel signUpPanelLabel;
+	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID;
 	JPasswordField PASSWORD;;
 	JButton logInBtn, signUpBtn, signUpBtn2, exitButton;
@@ -26,7 +27,6 @@ public class MainLogin extends JFrame implements ActionListener{
 	HttpCaller hc = new HttpCaller();
 	
 //	public void paint()
-	
 
 	
 	
@@ -64,13 +64,13 @@ public class MainLogin extends JFrame implements ActionListener{
 		pwdLabel.setBounds(38,45,135,20);
 		
 		 //welcome Label
-		welcome = new JLabel("안녕하세요. " + fake.name + "님");
+		welcome = new JLabel();
 		welcome.setBounds(5,-123,300,300);
 		welcome.setFont(new Font(null,Font.CENTER_BASELINE,30));
 		welcome.setVisible(false);
 		
 		 // 메인타이틀
-		mainLogLabel = new MainLogLabel("");
+		mainLogLabel = new AntialiasedLabel("");
 		mainLogLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/mainlogin.jpg")));
 		mainLogLabel.setBounds(0, 0, 800, 500);
 //		BufferedImage image = new BufferedImage();
@@ -182,6 +182,7 @@ public class MainLogin extends JFrame implements ActionListener{
 				add(loggedInPanel);
 				welcome.setVisible(true);
 				add(loggedInPanel2.reserve);
+				welcome.setText("안녕하세요. " + hc.getName() + "님");
 				
 				//Buttons
 				for(int i = 0; i < 12; i++) {
@@ -218,8 +219,8 @@ public class MainLogin extends JFrame implements ActionListener{
 			
 			logInLabelPanel = new JPanel();
 			
-			signUpPanelLabel = new SignUpPanelLabel("");
-			signUpPanelLabel.setIcon(new ImageIcon(""));
+			signUpPanelLabel = new AntialiasedLabel("");
+			signUpPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/signup.jpg")));
 			signUpPanelLabel.setBounds(0, 0, 800, 500);
 //			reLabel = new JLabel(" ");
 //			reLabel.setIcon(new ImageIcon(""));
@@ -249,6 +250,7 @@ public class MainLogin extends JFrame implements ActionListener{
 			signUpMainPanel.setSize(400,300);
 //			signUpMainPanel.setBackground(Color.white);
 			signUpPanel.add(signUpMainPanel);
+			signUpPanel.setBackground(new Color(255, 0, 0, 0));
 			signUpBtnPanel.add(signUpMainPanel);
 //			logInLabelPanel.add(signUpMainPanel);
 			signUpMainPanel.setBounds(350,550,300,200);
@@ -259,20 +261,31 @@ public class MainLogin extends JFrame implements ActionListener{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//회원가입 창에서 회원가입 버튼 눌렀을 때
-					
-					remove(signUpPanel);
-					
-					logInPanel.setVisible(true);
-					mainTitle.setVisible(true);
-					subTitle.setVisible(true);
-					for(int i = 0; i < signUpPanel.categories.length; i++) {
-						logInLabels[i].setVisible(false);
+					String res = hc.postSign(signUpPanel.fields[1].getText(), 
+								signUpPanel.pwdFields[0].getText(), 
+								signUpPanel.fields[0].getText(), 
+								Integer.valueOf(signUpPanel.fields[4].getText()), 
+								signUpPanel.fields[5].getText());
+					System.out.println(res);
+					JSONObject jo = new JSONObject(res);
+					if (!signUpPanel.pwdFields[0].getText().equals(signUpPanel.pwdFields[1].getText())) {
+						JOptionPane.showInternalMessageDialog(null, "비밀번호가 동일하지 않습니다.", "Error",1);
 					}
-					signUpBtn2.setVisible(false);
-					signUpPanelLabel.setVisible(false);
-					mainLogLabel.setVisible(true);
-					
-					JOptionPane.showInternalMessageDialog(null, "회원가입이 완료되었습니다.\n 다시 로그인 해주십시오.","회원가입 완료",1);
+					else if (jo.isNull("status")) {
+						JOptionPane.showInternalMessageDialog(null, "회원가입이 완료되었습니다.\n 다시 로그인 해주십시오.","회원가입 완료",1);
+						logInPanel.setVisible(true);
+						mainTitle.setVisible(true);
+						subTitle.setVisible(true);
+						remove(signUpPanel);
+						for(int i = 0; i < signUpPanel.categories.length; i++) {
+							logInLabels[i].setVisible(false);
+						}
+						signUpBtn2.setVisible(false);
+						signUpPanelLabel.setVisible(false);
+						mainLogLabel.setVisible(true);
+					} else {
+						JOptionPane.showInternalMessageDialog(null, jo.getString("message"), "Error",1);
+					}
 				}				
 			});
 			

@@ -26,7 +26,7 @@ public class SignUpPanel extends JPanel{
 			}
 		}
 
-		this.setBounds(300,100,200,200);
+		this.setBounds(350,130,200,200);
 		this.setLayout(new GridLayout(6,0,10,10));
 	}
 
