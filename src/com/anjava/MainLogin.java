@@ -261,10 +261,17 @@ public class MainLogin extends JFrame implements ActionListener{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//회원가입 창에서 회원가입 버튼 눌렀을 때
+					int yjuNum;
+					if (signUpPanel.fields[4].getText().equals("")) {
+						yjuNum = 0;
+					} else {
+						yjuNum = Integer.valueOf(signUpPanel.fields[4].getText());
+					}
+					
 					String res = hc.postSign(signUpPanel.fields[1].getText(), 
 								signUpPanel.pwdFields[0].getText(), 
 								signUpPanel.fields[0].getText(), 
-								Integer.valueOf(signUpPanel.fields[4].getText()), 
+								yjuNum, 
 								signUpPanel.fields[5].getText());
 					System.out.println(res);
 					JSONObject jo = new JSONObject(res);
