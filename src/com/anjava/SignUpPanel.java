@@ -18,6 +18,7 @@ public class SignUpPanel extends JPanel{
 			//패스워드필드 설정
 			if(i == 2 || i ==3) {
 				pwdFields[i-2] = new JPasswordField(i);
+				pwdFields[i-2].setToolTipText(categories[i]);
 				this.add(pwdFields[i-2]);
 			}else {
 			fields[i] = new JTextField(15);

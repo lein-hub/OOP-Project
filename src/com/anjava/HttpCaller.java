@@ -1,8 +1,10 @@
 package com.anjava;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -28,6 +30,7 @@ public class HttpCaller {
 	private boolean isAdmin;  // 사용자의 관리자 여부가 저장됩니다.
 	private int yjuNum;  // 사용자의 학번이 저장됩니다.
 	private String email;  // 사용자의 이메일이 저장됩니다.
+	private JSONArray reservedRooms;
 	
 	private boolean isSuccessful = false;  // 요청이 수행될 때 마다 성공적으로 응답을 수신하였는지 저장됩니다.
 	
@@ -80,7 +83,9 @@ public class HttpCaller {
 			this.isSuccessful = false;
 			return "API request and response failed";
 		}
-	}public String getUserDetail() {  // 현재 사용자의 상세정보를 요청
+	}
+	
+	public String getUserDetail() {  // 현재 사용자의 상세정보를 요청
 		return this.request("GET", url+"users/"+this.id, null);
 	}
 	
@@ -88,7 +93,7 @@ public class HttpCaller {
 		return this.request("GET", url+"room/"+String.valueOf(roomNum), null);
 	}
 	
-	public String getAllRoom(int roomNum) {  // 전체 방의 정보를 요청
+	public String getAllRoom() {  // 전체 방의 정보를 요청
 		return this.request("GET", url+"room/", null);
 	}
 	
@@ -115,6 +120,7 @@ public class HttpCaller {
 			this.isAdmin = jo.getBoolean("isAdmin");
 			this.yjuNum = jo.getInt("yjuNum");
 			this.email = jo.getString("email");
+			this.reservedRooms = jo.getJSONArray("reservedRooms");
 		}
 		return result;
 	}
@@ -125,8 +131,19 @@ public class HttpCaller {
 		jo.put("roomNum", roomNum);
 		jo.put("column", col);
 		jo.put("row", row);
+		if (rowBlank != null)
 		jo.put("rowBlankLine", Arrays.toString(rowBlank));
+		if (colBlank != null)
 		jo.put("colBlankLine", Arrays.toString(colBlank));
+		return this.request("POST", url+"room/", jo.toString());
+	}
+	
+	public String postCreateRoom(int roomNum, int col, int row) {  // 방을 생성하는 요청
+		JSONObject jo = new JSONObject();
+		
+		jo.put("roomNum", roomNum);
+		jo.put("column", col);
+		jo.put("row", row);
 		return this.request("POST", url+"room/", jo.toString());
 	}
 	
@@ -170,12 +187,17 @@ public class HttpCaller {
 		return this.request("DELETE", url+"room/"+roomNum+"/reserve", null);
 	}
 	
+	public String deleteRoom(int roomNum) {
+		return this.request("DELETE", url+"room/"+roomNum, null);
+	}
+	
 	public void clearData() {  // 현재 저장하고 있는 사용자 정보를 삭제한다.
 		this.id = "";
 		this.token = "";
 		this.email = null;
 		this.name = null;
 		this.isAdmin = false;
+		this.reservedRooms = null;
 	}
 	
 	public boolean isLoggedIn() {
@@ -196,6 +218,9 @@ public class HttpCaller {
 	}
 	public String getEmail() {
 		return email;
+	}
+	public JSONArray getReservedRooms() {
+		return reservedRooms;
 	}
 	
 }
