@@ -12,6 +12,7 @@ public class TestField {
 		int[] scd = {2,4};
 		HttpCaller hc = new HttpCaller();
 		System.out.println(hc.postLogIn("test6", "12341234"));
+		System.out.println(Arrays.toString(fst));
 		Date resetDate = new Date();
 		JSONObject roomsData = new JSONObject(hc.getAllRoom());
 //		System.out.println(hc.postCreateRoom(202, 6, 8));
@@ -24,7 +25,10 @@ public class TestField {
 		
 		
 //		System.out.println(hc.getOneRoom(205));
-//		System.out.println(hc.postCreateRoom(15, 8, 10, fst, scd));
+		for (int i=100; i<130; i++) {
+			
+			System.out.println(hc.deleteRoom(i));
+		}
 //		System.out.println(hc.getUserDetail());
 //		System.out.println(hc.getOneRoom(204));
 	}

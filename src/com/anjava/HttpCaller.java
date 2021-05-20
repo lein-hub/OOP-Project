@@ -132,9 +132,10 @@ public class HttpCaller {
 		jo.put("column", col);
 		jo.put("row", row);
 		if (rowBlank != null)
-		jo.put("rowBlankLine", Arrays.toString(rowBlank));
+		jo.put("rowBlankLine", rowBlank);
 		if (colBlank != null)
-		jo.put("colBlankLine", Arrays.toString(colBlank));
+		jo.put("colBlankLine", colBlank);
+		System.out.println(jo.toString());
 		return this.request("POST", url+"room/", jo.toString());
 	}
 	

@@ -10,9 +10,10 @@ import org.json.JSONArray;
 public class LoggedInPanel extends JPanel{
 	int boxCount;
 	JButton[] reserveBtn;
-	JPanel labelPanel;
-//	JScrollPane scroll = new JScrollPane(this,10, 10);
-	
+	JPanel temp = new JPanel();
+	JScrollPane scroll = new JScrollPane(temp,
+										 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	LoggedInPanel2 lip = new LoggedInPanel2(); 
 	
 	
@@ -21,8 +22,14 @@ public class LoggedInPanel extends JPanel{
 		this.reserveBtn = new JButton[boxCount];
 		
 		//PanelSetting
-		this.setBorder(BorderFactory.createLineBorder(Color.black));
-		this.setBounds(6,54,600,400);
+		temp.setBorder(BorderFactory.createLineBorder(Color.black));
+		temp.setPreferredSize(new Dimension(600, (this.boxCount / 4 + 1) * 100));
+		scroll.setPreferredSize(new Dimension(600, 400));
+		this.setBounds(6, 54, 600, 400);
+		
+//			this.setPreferredSize(new Dimension(600, 400));
+//			this.setLocation(6, 54);
+			
 		for(int i = 0; i < roomsData.length(); i++) {
 			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
 			int maxSit = roomsData.getJSONObject(i).getInt("maxSit");
@@ -45,8 +52,10 @@ public class LoggedInPanel extends JPanel{
 			}
 			reserveBtn[i].setBorder(null);
 			reserveBtn[i].setPreferredSize(new Dimension(140,90));
-			add(reserveBtn[i]);
+			temp.add(reserveBtn[i]);
+			add(scroll);
 		}
+		
 	}
   
 

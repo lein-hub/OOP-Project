@@ -29,7 +29,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JPanel logInLabelPanel = new JPanel();
 	SignUpPanel signUpPanel = new SignUpPanel();
 	JLabel[] logInLabels = new JLabel[signUpPanel.categories.length];
-
+	JScrollPane scroll;
 
 	public MainLogin(){
 		
@@ -339,9 +339,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	
 	public void addLoggedInPanel() {
 		loggedInPanel = new LoggedInPanel(new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData"));
+//		loggedInPanel.setPreferredSize(new Dimension(600, 400));
 		add(welcome);
-		add(loggedInPanel);
+		
+//		scroll = new JScrollPane(loggedInPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//		scroll.setPreferredSize(new Dimension(600, 400));
 		welcome.setVisible(true);
+//		add(scroll);
+		add(loggedInPanel);
 		add(loggedInPanel2.reserve);
 		welcome.setText("안녕하세요. " + hc.getName() + "님");
 		add(logOutBtn);
