@@ -51,7 +51,7 @@ public class LoggedInPanel extends JPanel{
 				reserveBtn[i].setBackground(Color.gray.brighter());
 			}
 			reserveBtn[i].setBorder(null);
-			reserveBtn[i].setPreferredSize(new Dimension(140,90));
+			reserveBtn[i].setPreferredSize(new Dimension(135,90));
 			temp.add(reserveBtn[i]);
 			add(scroll);
 		}

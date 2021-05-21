@@ -26,11 +26,11 @@ public class HttpCaller {
 	
 	private String id = "";  // 사용자의 id가 저장됩니다.
 	private String token = "";  // 사용자의 토큰(식별자)이 저장됩니다.
-	private String name;  // 사용자의 이름이 저장됩니다.
-	private boolean isAdmin;  // 사용자의 관리자 여부가 저장됩니다.
-	private int yjuNum;  // 사용자의 학번이 저장됩니다.
-	private String email;  // 사용자의 이메일이 저장됩니다.
-	private JSONArray reservedRooms;
+	private String name = null;  // 사용자의 이름이 저장됩니다.
+	private boolean isAdmin = false;  // 사용자의 관리자 여부가 저장됩니다.
+	private int yjuNum = 0;  // 사용자의 학번이 저장됩니다.
+	private String email = null;  // 사용자의 이메일이 저장됩니다.
+	private JSONArray reservedRooms = null;  // 사용자가 예약한 방 목록이 저장됩니다.
 	
 	private boolean isSuccessful = false;  // 요청이 수행될 때 마다 성공적으로 응답을 수신하였는지 저장됩니다.
 	
@@ -51,7 +51,7 @@ public class HttpCaller {
 				request = new Request.Builder()
 				.addHeader("Authorization", token)
 				.url(requestURL)
-				.delete(RequestBody.create(jsonMessage, MediaType.parse("application/json; charset=utf-8"))) //DELETE로 요청합니다.
+				.delete() //DELETE로 요청합니다.
 				.build();
 				break;
 			case "PATCH":
@@ -84,19 +84,139 @@ public class HttpCaller {
 			return "API request and response failed";
 		}
 	}
-	
+	/**
+	 * 현재 사용자의 정보를 요청합니다.<br>
+	 * @return 현재 사용자의 정보가 담긴 JSON 객체에 대한 String 데이터를 반환합니다.
+	 * <pre>
+	 * {
+  "message": "{userId}님의 정보 입니다.",
+  "data": {
+    "isAdmin": boolean,
+    "userId": "userId",
+    "name": "userName",
+    "email": "test@email.com",
+    "yjuNum": 1234567,
+    "reservedRooms": [
+      {
+        "sitNum": 1,
+        "roomNum": 1,
+        "reserveDate": "ISO 8601형식의 String입니다. Timezone은 UTC 0인 Z입니다."
+      },
+      {
+        "sitNum": 99,
+        "roomNum": 33,
+        "reserveDate": "YYYY-MM-DDThh:mm:ss.sssZ"
+      }
+    ]
+  }
+}
+	 * </pre>
+	 */
 	public String getUserDetail() {  // 현재 사용자의 상세정보를 요청
 		return this.request("GET", url+"users/"+this.id, null);
 	}
-	
+	/**
+	 * 특정 사용자의 정보를 조회합니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param userId 는 조회할 사용자의 ID입니다.
+	 * @return 매개변수 userID 라는 ID의 사용자 정보가 담긴 JSON 객체에 대한 String 데이터를 반환합니다.
+	 * <pre>
+	 * {
+  "message": "{userId}님의 정보 입니다.",
+  "data": {
+    "isAdmin": boolean,
+    "userId": "userId",
+    "name": "userName",
+    "email": "test@email.com",
+    "yjuNum": 1234567,
+    "reservedRooms": [
+      {
+        "sitNum": 1,
+        "roomNum": 1,
+        "reserveDate": "ISO 8601형식의 String입니다. Timezone은 UTC 0인 Z입니다."
+      },
+      {
+        "sitNum": 99,
+        "roomNum": 33,
+        "reserveDate": "YYYY-MM-DDThh:mm:ss.sssZ"
+      }
+    ]
+  }
+}
+	 * </pre>
+	 */
+	public String getUserDetail(String userId) {  // 특정 사용자의 상세정보를 요청
+		return this.request("GET", url+"users/"+userId, null);
+	}
+	/**
+	 * 특정 방의 상세한 정보를 조회합니다.<br>
+	 * @param roomNum 은 조회할 방의 호수입니다.
+	 * @return 
+	 * <pre>
+	 * {
+  "message": "{roomNum} 방의 정보",
+  "data": {
+    "roomData": {
+      "row": 10,
+      "column": 8,
+      "rowBlankLine": [
+        3,
+        6
+      ],
+      "columnBlankLine": [
+        4,
+        8
+      ],
+      "resetDate": "",
+      "reservedData": { // sitNum 오름차순으로 정렬합니다.
+        "16": "aio",
+        "19": "forbidden" // 예약이 금지된 좌석입니다.
+      }
+    }
+  }
+}
+	 * </pre>
+	 */
 	public String getOneRoom(int roomNum) {  // 특정 방의 정보를 요청
 		return this.request("GET", url+"room/"+String.valueOf(roomNum), null);
 	}
-	
+	/**
+	 * 모든 방에 대한 정보를 조회합니다.<br>
+	 * @return <pre>{
+  "message": "모든 방 리스트입니다.",
+  "data": {
+    "roomsData": [
+      {
+        "roomNum": 202,
+        "maxSit": 80,
+        "resetDate": "ISO 8601 // 존재하지 않다면 요청 결과에 표기되지 않습니다."
+      },
+      {
+        "roomNum": 203,
+        "maxSit": 80
+      }
+    ]
+  }
+}</pre>
+	 */
 	public String getAllRoom() {  // 전체 방의 정보를 요청
 		return this.request("GET", url+"room/", null);
 	}
-	
+	/**
+	 * 새로운 유저를 등록합니다.<br>
+	 * @param id 는 등록시 사용할 ID입니다.
+	 * @param pw 는 등록시 사용할 비밀번호입니다.
+	 * @param name 는 등록시 사용할 이름입니다.
+	 * @param yNum 는 등록시 사용할 학번입니다.
+	 * @param email 는 등록시 사용할 이메일 주소입니다.
+	 * @return <pre>{
+    "userId":"user의 아이디" // uniuqe ,
+    "password":"비밀번호" // min 8,
+    "name":"한글 성함" ,
+    "yjuNum":"학생번호" // unique 7자리의 숫자형식,
+    "email":"이메일" // unique  email 형식이여야 합니다.
+}</pre>
+	 */
 	public String postSign(String id, String pw, String name, int yNum, String email) {  // 회원가입을 요청
 		JSONObject jo = new JSONObject();
 		
@@ -107,7 +227,18 @@ public class HttpCaller {
 		jo.put("email", email);
 		return this.request("POST", url+"users/sign/", jo.toString());
 	}
-	
+	/**
+	 * 로그인 합니다.<br>
+	 * @param id 는 로그인할 아이디입니다.
+	 * @param pw 는 로그인할 계정에 대한 비밀번호입니다.
+	 * @return <pre>{
+  "message": "userId님 로그인 성공",
+  "data": {
+    "token": "jwt string입니다.",
+    "isAdmin": boolean
+  }
+}</pre>
+	 */
 	public String postLogIn(String id, String pw) {  // 로그인을 요청 (로그인 성공시 사용자 정보를 필드변수에 저장)
 		String result = this.request("POST", url+"users/", "{\"userId\":\""+id+"\",\"password\":\""+pw+"\"}");
 		if (isSuccessful) {
@@ -124,7 +255,28 @@ public class HttpCaller {
 		}
 		return result;
 	}
-	
+	/**
+	 * 새로운 Room을 만듭니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param roomNum 은 새로 만들 방 호수입니다.
+	 * @param col 은 좌석 열갯수 입니다.
+	 * @param row 는 좌석 행갯수 입니다.
+	 * @param rowBlank 은 띄울 행번호입니다. 띄우지 않으려면 null을 입력하세요.
+	 * @param colBlank 은 띄울 열번호입니다. 띄우지 않으려면 null을 입력하세요.
+	 * @return <pre>{
+    "roomNum": 방의 번호 int,
+    "column": 세로줄 int,
+    "row": 가로줄 int,
+    "rowBlankLine": [
+        1
+    ],
+    "columnBlankLine": [
+        3,
+        4,
+    8 ...
+    ]
+}</pre>
+	 */
 	public String postCreateRoom(int roomNum, int col, int row, int[] rowBlank, int[] colBlank) {  // 방을 생성하는 요청
 		JSONObject jo = new JSONObject();
 		
@@ -138,7 +290,26 @@ public class HttpCaller {
 		System.out.println(jo.toString());
 		return this.request("POST", url+"room/", jo.toString());
 	}
-	
+	/**
+	 * 새로운 Room을 만듭니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param roomNum 은 새로 만들 방 호수입니다.
+	 * @param col 은 좌석 열갯수 입니다.
+	 * @param row 는 좌석 행갯수 입니다.
+	 * @return <pre>{
+    "roomNum": 방의 번호 int,
+    "column": 세로줄 int,
+    "row": 가로줄 int,
+    "rowBlankLine": [
+        1
+    ],
+    "columnBlankLine": [
+        3,
+        4,
+    8 ...
+    ]
+}</pre>
+	 */
 	public String postCreateRoom(int roomNum, int col, int row) {  // 방을 생성하는 요청
 		JSONObject jo = new JSONObject();
 		
@@ -147,7 +318,12 @@ public class HttpCaller {
 		jo.put("row", row);
 		return this.request("POST", url+"room/", jo.toString());
 	}
-	
+	/**
+	 * roomNum번 방의 특정 좌석을 예약합니다.<br>
+	 * @param roomNum 은 좌석을 예약할 방의 호수입니다.
+	 * @param sitNum 은 예약할 좌석 번호입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
 	public String postReserveRoom(int roomNum, int sitNum) {  // 자리를 예약하는 요청
 		JSONObject jo = new JSONObject();
 		
@@ -155,7 +331,29 @@ public class HttpCaller {
 		
 		return this.request("POST", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
-	
+	/**
+	 * 특정 사용자를 roomNum번 방의 특정 좌석에 예약시킵니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param userId 는 예약시킬 사용자 아이디입니다.
+	 * @param roomNum 은 좌석을 예약할 방의 호수입니다.
+	 * @param sitNum 은 예약할 좌석 번호입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
+	public String postReserveRoom(String userId, int roomNum, int sitNum) {  // 자리를 예약하는 요청
+		JSONObject jo = new JSONObject();
+		jo.put("userId", userId);
+		jo.put("sitNum", sitNum);
+		
+		return this.request("POST", url+"room/"+roomNum+"/reserve", jo.toString());
+	}
+	/**
+	 * roomNum방에 resetDate를 등록하거나 갱신합니다.<br>
+	 * resetDate없이 보내면 resetDate가 삭제됩니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param roomNum 은 리셋할 날짜를 수정할 방 호수입니다.
+	 * @param resetDate 리셋할 날짜 객체입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
 	public String patchResetDateRoom(int roomNum, Date resetDate) {  // 특정 방의 자리가 리셋되는 시간을 설정하는 요청
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS:SZ");
 		JSONObject jo = new JSONObject();
@@ -165,7 +363,12 @@ public class HttpCaller {
 		
 		return this.request("PATCH", url+"room/"+roomNum+"/reset", jo.toString());
 	}
-	
+	/**
+	 * 현재 사용자의 roomNum방의 특정 좌석에 대한 예약을 취소합니다.
+	 * @param roomNum 은 예약을 취소할 좌석이 있는 방 호수입니다.
+	 * @param sitNum 은 예약을 취소할 좌석 번호입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
 	public String deleteReserveRoom(int roomNum, int sitNum) {  // 특정 방에 대해서 특정 자리의 예약을 위소하는 요청
 		JSONObject jo = new JSONObject();
 		
@@ -174,24 +377,44 @@ public class HttpCaller {
 		
 		return this.request("DELETE", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
-	
-	public String deleteReserveRoom(int roomNum, String userId) {  // 특정 방에 대해서 특정 유저의 예약을 취소하는 요청
+	/**
+	 * 특정 유저의 roomNum방의 특정 좌석에 대한 예약을 취소합니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param userId 는 예약을 취소할 사용자 아이디입니다.
+	 * @param roomNum 은 예약을 취소할 좌석이 있는 방 호수입니다.
+	 * @param sitNum 은 예약을 취소할 좌석 번호입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
+	public String deleteReserveRoom(String userId, int roomNum, int sitNum) {  // 특정 방에 대해서 특정 유저의 예약을 취소하는 요청
 		JSONObject jo = new JSONObject();
 		
-		
 		jo.put("userId", userId);
+		jo.put("sitNum", sitNum);
 		
 		return this.request("DELETE", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
-	
+	/**
+	 * 현재 사용자의 roomNum방에 대한 예약을 취소합니다.
+	 * @param roomNum 은 예약을 취소할 좌석이 있는 방 호수입니다.
+	 * @param sitNum 은 예약을 취소할 좌석 번호입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
 	public String deleteReserveRoom(int roomNum) {  // 특정 방에 대해서 현재 사용자의 예약을 취소하는 요청
 		return this.request("DELETE", url+"room/"+roomNum+"/reserve", null);
 	}
-	
+	/**
+	 * 방을 삭제하면서, 이 방과 관련된 유저들의 예약들도 삭제 됩니다.<br>
+	 * 관리자만 사용 가능합니다.
+	 * @param roomNum 는 삭제할 방 호수입니다.
+	 * @return 요청 결과 메시지가 반환됩니다.
+	 */
 	public String deleteRoom(int roomNum) {
+		
 		return this.request("DELETE", url+"room/"+roomNum, null);
 	}
-	
+	/**
+	 * 현재 이 객체에서 저장하고 있는 사용자 정보를 전부 삭제합니다.
+	 */
 	public void clearData() {  // 현재 저장하고 있는 사용자 정보를 삭제한다.
 		this.id = "";
 		this.token = "";
@@ -199,27 +422,55 @@ public class HttpCaller {
 		this.name = null;
 		this.isAdmin = false;
 		this.reservedRooms = null;
+		this.yjuNum = 0;
 	}
-	
+	/**
+	 * 현재 로그인 여부를 반환합니다.
+	 * @return 로그인 되어 있을 시 true, 아닐 시 false
+	 */
 	public boolean isLoggedIn() {
 		if (token.isEmpty()) return false;
 		return true;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저의 ID를 반환합니다.
+	 * @return 로그인 되어 있지 않으면 공백을 반환합니다.
+	 */
 	public String getId() {
 		return id;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저의 이름을 반환합니다.
+	 * @return 로그인 되어 있지 않으면 null을 반환합니다.
+	 */
 	public String getName() {
 		return name;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저의 관리자 여부를 반환합니다.
+	 * @return 관리자일 시 true, 아니거나 로그인 되어있지 않을 시 false
+	 */
 	public boolean isAdmin() {
 		return isAdmin;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저의 학번을 반환합니다.
+	 * @return 로그인 되어 있지 않으면 0을 반환합니다.
+	 */
 	public int getYjuNum() {
 		return yjuNum;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저의 이메일을 반환합니다.
+	 * @return 로그인 되어 있지 않으면 null을 반환합니다.
+	 */
 	public String getEmail() {
 		return email;
 	}
+	/**
+	 * 현재 로그인 되어 있는 유저가 예약한 방 목록이 반환됩니다.
+	 * @return 로그인 되어 있지 않으면 null을 반환합니다.
+	 */
 	public JSONArray getReservedRooms() {
 		return reservedRooms;
 	}

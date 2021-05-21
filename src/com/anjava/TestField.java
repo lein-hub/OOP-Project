@@ -23,12 +23,9 @@ public class TestField {
 		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
 //		System.out.println(roomsData.getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
 		
-		
 //		System.out.println(hc.getOneRoom(205));
-		for (int i=100; i<130; i++) {
-			
-			System.out.println(hc.deleteRoom(i));
-		}
+//		System.out.println(hc.postCreateRoom(999,7,8));
+		System.out.println(hc.deleteRoom(999));
 //		System.out.println(hc.getUserDetail());
 //		System.out.println(hc.getOneRoom(204));
 	}
