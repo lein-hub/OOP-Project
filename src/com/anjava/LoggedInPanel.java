@@ -47,7 +47,8 @@ public class LoggedInPanel extends JPanel{
 			int remainSit = roomsData.getJSONObject(i).getInt("remainSit");
 			boolean isUserIncluded = roomsData.getJSONObject(i).getBoolean("isUserIncluded");
 			String btnText = "<HTML>" + "방번호: " + roomNum + "<br>" + "남은 좌석: " + remainSit + "/" + maxSit;
-			
+			reserveBtn[i] = new JButton();
+
 			if (isUserIncluded) {
 				reserveBtn[i].setBackground(Color.orange);
 				if (!roomsData.getJSONObject(i).isNull("resetDate")) {
@@ -73,7 +74,7 @@ public class LoggedInPanel extends JPanel{
 			} else {				
 				reserveBtn[i].setBackground(Color.gray.brighter());
 			}
-			reserveBtn[i] = new JButton(btnText);
+			reserveBtn[i].setText(btnText);
 			reserveBtn[i].setBorder(null);
 			reserveBtn[i].setPreferredSize(new Dimension(140,100));
 			reserveBtn[i].setFocusable(false);
