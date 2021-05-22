@@ -26,31 +26,6 @@ public class LoggedInPanel extends JPanel{
 										 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	
-	private JSONArray sortRoomsData(JSONArray roomsData) {
-		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
-		JSONArray sortedJsonArray = new JSONArray();
-	    for (int i = 0; i < roomsData.length(); i++) {
-	        jsonValues.add(roomsData.getJSONObject(i));
-	    }
-	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
-	        private static final String KEY_NAME = "roomNum";
-
-	        @Override
-	        public int compare(JSONObject a, JSONObject b) {
-	            Integer valA = (Integer) a.get(KEY_NAME);
-	            Integer valB = (Integer) b.get(KEY_NAME);
-
-	            return valA.compareTo(valB);
-	        }
-	    });
-	    
-	    for (int i = 0; i < roomsData.length(); i++) {
-	        sortedJsonArray.put(jsonValues.get(i));
-	    }
-	    
-	    return sortedJsonArray;
-	}
-	
 	public LoggedInPanel(JSONArray roomsData){
 		this.boxCount = roomsData.length();
 		this.reserveBtn = new JButton[boxCount];
@@ -108,5 +83,30 @@ public class LoggedInPanel extends JPanel{
 			reserve.setBounds(615,54,160,400);
 			reserve.setBackground(Color.gray.brighter());
 		}
+	}
+	
+	private JSONArray sortRoomsData(JSONArray roomsData) {
+		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+		JSONArray sortedJsonArray = new JSONArray();
+	    for (int i = 0; i < roomsData.length(); i++) {
+	        jsonValues.add(roomsData.getJSONObject(i));
+	    }
+	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
+	        private static final String KEY_NAME = "roomNum";
+
+	        @Override
+	        public int compare(JSONObject a, JSONObject b) {
+	            Integer valA = (Integer) a.get(KEY_NAME);
+	            Integer valB = (Integer) b.get(KEY_NAME);
+
+	            return valA.compareTo(valB);
+	        }
+	    });
+	    
+	    for (int i = 0; i < roomsData.length(); i++) {
+	        sortedJsonArray.put(jsonValues.get(i));
+	    }
+	    
+	    return sortedJsonArray;
 	}
 }
