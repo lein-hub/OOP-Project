@@ -217,11 +217,12 @@ public class HttpCaller {
     "email":"이메일" // unique  email 형식이여야 합니다.
 }</pre>
 	 */
-	public String postSign(String id, String pw, String name, int yNum, String email) {  // 회원가입을 요청
+	public String postSign(String id, char[] pw, String name, int yNum, String email) {  // 회원가입을 요청
 		JSONObject jo = new JSONObject();
-		
+		String password = "";
+		for (char a : pw) password += a;
 		jo.put("userId", id);
-		jo.put("password", pw);
+		jo.put("password", password);
 		jo.put("name", name);
 		jo.put("yjuNum", yNum);
 		jo.put("email", email);
@@ -239,8 +240,11 @@ public class HttpCaller {
   }
 }</pre>
 	 */
-	public String postLogIn(String id, String pw) {  // 로그인을 요청 (로그인 성공시 사용자 정보를 필드변수에 저장)
-		String result = this.request("POST", url+"users/", "{\"userId\":\""+id+"\",\"password\":\""+pw+"\"}");
+	public String postLogIn(String id, char[] pw) {  // 로그인을 요청 (로그인 성공시 사용자 정보를 필드변수에 저장)
+		String password = "";
+		for (char a : pw) password += a;
+		String result = this.request("POST", url+"users/", "{\"userId\":\""+id+"\",\"password\":\""+password+"\"}");
+		System.out.println(password);
 		if (isSuccessful) {
 			JSONObject jo = new JSONObject(result).getJSONObject("data");
 			this.id = id;

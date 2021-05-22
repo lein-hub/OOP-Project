@@ -2,6 +2,11 @@ package com.anjava;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import javax.swing.*;
 
@@ -10,25 +15,22 @@ import org.json.JSONArray;
 public class LoggedInPanel extends JPanel{
 	int boxCount;
 	JButton[] reserveBtn;
-	JPanel temp = new JPanel();
-	JScrollPane scroll = new JScrollPane(temp,
+	JPanel btnPanel = new JPanel();
+	JTextArea reserve = new JTextArea();
+	JScrollPane scroll = new JScrollPane(btnPanel,
 										 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	LoggedInPanel2 lip = new LoggedInPanel2(); 
 	
 	
 	public LoggedInPanel(JSONArray roomsData){
 		this.boxCount = roomsData.length();
 		this.reserveBtn = new JButton[boxCount];
-		
+	
 		//PanelSetting
-		temp.setBorder(BorderFactory.createLineBorder(Color.black));
-		temp.setPreferredSize(new Dimension(600, (this.boxCount / 4 + 1) * 100));
+		btnPanel.setPreferredSize(new Dimension(580, (boxCount / 4 + 1) * 106));
 		scroll.setPreferredSize(new Dimension(600, 400));
-		this.setBounds(6, 54, 600, 400);
-		
-//			this.setPreferredSize(new Dimension(600, 400));
-//			this.setLocation(6, 54);
+		scroll.getVerticalScrollBar().setUnitIncrement(16);
+		this.setBounds(6, 49, 600, 400);
 			
 		for(int i = 0; i < roomsData.length(); i++) {
 			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
@@ -37,12 +39,24 @@ public class LoggedInPanel extends JPanel{
 			boolean isUserIncluded = roomsData.getJSONObject(i).getBoolean("isUserIncluded");
 			String btnText = "<HTML>" + "방번호: " + roomNum + "<br>" + "남은 좌석: " + remainSit + "/" + maxSit;
 			if (!roomsData.getJSONObject(i).isNull("resetDate")) {
-//				btnText.concat("<br>" + "좌석 초기화: " + roomsData.getJSONObject(i).getString("resetDate") + "</HTML>");
-				btnText += "<br>" + "좌석 초기화: " + roomsData.getJSONObject(i).getString("resetDate") + "</HTML>";
+				String datestr = roomsData.getJSONObject(i).getString("resetDate");
+				try {
+				    // 타임존이 포함된 ISO 8601 문자열로부터 Asia/Seoul 타임존의 LocaDateTime 오브젝트 획득
+				    LocalDateTime dateTime = LocalDateTime.from(
+
+				        Instant.from(
+				            DateTimeFormatter.ISO_DATE_TIME.parse(datestr)
+				        ).atZone(ZoneId.of("Asia/Seoul"))
+				    );
+				    datestr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
+				// 파씽 오류시 DateTimeParseException 예외 발생
+				} catch (DateTimeParseException ex) {
+					ex.printStackTrace();
+				    // 예외 처리 로직 작성
+				}
+				btnText += "<br>" + "좌석 초기화: " + datestr;
 				System.out.println(btnText);
 
-			} else {
-				btnText.concat("</HTML>");
 			}
 			reserveBtn[i] = new JButton(btnText);
 			if (isUserIncluded) {
@@ -51,13 +65,14 @@ public class LoggedInPanel extends JPanel{
 				reserveBtn[i].setBackground(Color.gray.brighter());
 			}
 			reserveBtn[i].setBorder(null);
-			reserveBtn[i].setPreferredSize(new Dimension(135,90));
-			temp.add(reserveBtn[i]);
+			reserveBtn[i].setPreferredSize(new Dimension(140,100));
+			btnPanel.add(reserveBtn[i]);
+			scroll.setBorder(null);
 			add(scroll);
-		}
 		
+			
+			reserve.setBounds(615,54,160,400);
+			reserve.setBackground(Color.gray.brighter());
+		}
 	}
-  
-
-	
 }
