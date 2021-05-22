@@ -200,9 +200,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				//로그인 했을 때 생기는 Buttons
 				
 				for(int i = 0; i < loggedInPanel.boxCount; i++) {
-//					loggedInPanel.reserveBtn[i] = new JButton("<HTML>" + fake.relistedRoom[0] + "<br>예약 현황20/40<br>좌석초기화:2021/03/09<br>앞으로 27일 5시간 39분<HTML>");
-//					loggedInPanel.reserveBtn[i].setBackground(Color.gray.brighter());
-//					loggedInPanel.reserveBtn[i].setBorder(null);
 					loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
 //											//예약버튼 눌렀을 때
 //											@Override

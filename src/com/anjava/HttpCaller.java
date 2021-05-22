@@ -151,7 +151,7 @@ public class HttpCaller {
 	/**
 	 * 특정 방의 상세한 정보를 조회합니다.<br>
 	 * @param roomNum 은 조회할 방의 호수입니다.
-	 * @return 
+	 * @return 매개변수 roomNum 이라는 호수의 방 정보가 담긴 JSON 객체에 대한 String 데이터를 반환합니다.
 	 * <pre>
 	 * {
   "message": "{roomNum} 방의 정보",
@@ -182,7 +182,8 @@ public class HttpCaller {
 	}
 	/**
 	 * 모든 방에 대한 정보를 조회합니다.<br>
-	 * @return <pre>{
+	 * @return 모든 방의 대략적인 정보가 담긴 JSON 객체에 대한 String 데이터를 반환합니다.
+	 * <pre>{
   "message": "모든 방 리스트입니다.",
   "data": {
     "roomsData": [
@@ -209,7 +210,8 @@ public class HttpCaller {
 	 * @param name 는 등록시 사용할 이름입니다.
 	 * @param yNum 는 등록시 사용할 학번입니다.
 	 * @param email 는 등록시 사용할 이메일 주소입니다.
-	 * @return <pre>{
+	 * @return 회원 가입시 기입한 정보들이 담긴 JSON 객체에 대한 String 데이터를 반환합니다. 오류 발생시 오류 메시지를 반환합니다.
+	 * <pre>{
     "userId":"user의 아이디" // uniuqe ,
     "password":"비밀번호" // min 8,
     "name":"한글 성함" ,
@@ -232,7 +234,8 @@ public class HttpCaller {
 	 * 로그인 합니다.<br>
 	 * @param id 는 로그인할 아이디입니다.
 	 * @param pw 는 로그인할 계정에 대한 비밀번호입니다.
-	 * @return <pre>{
+	 * @return 요청 결과 메시지와 함께 토큰과 관리자 여부가 정보가 담긴 JSON 객체에 대한 String 데이터를 반환합니다.
+	 * <pre>{
   "message": "userId님 로그인 성공",
   "data": {
     "token": "jwt string입니다.",

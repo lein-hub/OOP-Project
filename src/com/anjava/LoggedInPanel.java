@@ -7,10 +7,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.swing.*;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class LoggedInPanel extends JPanel{
 	int boxCount;
@@ -31,7 +36,30 @@ public class LoggedInPanel extends JPanel{
 		scroll.setPreferredSize(new Dimension(600, 400));
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
 		this.setBounds(6, 49, 600, 400);
-			
+		
+		//roomsData를 방 번호 순서로 정렬합니다!
+
+	    List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+	    for (int i = 0; i < roomsData.length(); i++) {
+	        jsonValues.add(roomsData.getJSONObject(i));
+	    }
+	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
+	        private static final String KEY_NAME = "roomNum";
+
+	        @Override
+	        public int compare(JSONObject a, JSONObject b) {
+	            Integer valA = (Integer) a.get(KEY_NAME);
+	            Integer valB = (Integer) b.get(KEY_NAME);
+
+	            return valB.compareTo(valA);
+	        }
+	    });
+	    
+	    for (int i = roomsData.length()-1; i >= 0; i--) {
+	    	if (i == roomsData.length()-1) roomsData.clear();
+	    	roomsData.put(jsonValues.get(i));
+	    }
+		
 		for(int i = 0; i < roomsData.length(); i++) {
 			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
 			int maxSit = roomsData.getJSONObject(i).getInt("maxSit");
