@@ -75,6 +75,7 @@ public class LoggedInPanel extends JPanel{
 			}
 			reserveBtn[i].setBorder(null);
 			reserveBtn[i].setPreferredSize(new Dimension(140,100));
+			reserveBtn[i].setFocusable(false);
 			btnPanel.add(reserveBtn[i]);
 			scroll.setBorder(null);
 			add(scroll);
@@ -85,17 +86,19 @@ public class LoggedInPanel extends JPanel{
 		}
 	}
 	
-	private JSONArray sortJsonArray(JSONArray jsonArr, String KEY_NAME) {
+	private <T extends Comparable<T>> JSONArray sortJsonArray(JSONArray jsonArr, String KEY_NAME) {
 		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
 		JSONArray sortedJsonArray = new JSONArray();
 	    for (int i = 0; i < jsonArr.length(); i++) {
 	        jsonValues.add(jsonArr.getJSONObject(i));
 	    }
 	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
-	        @Override
+	        @SuppressWarnings("unchecked")
+			@Override
 	        public int compare(JSONObject a, JSONObject b) {
-	            Integer valA = (Integer) a.get(KEY_NAME);
-	            Integer valB = (Integer) b.get(KEY_NAME);
+	        	
+	        	T valA = (T) a.get(KEY_NAME);
+	            T valB = (T) b.get(KEY_NAME);
 
 	            return valA.compareTo(valB);
 	        }
