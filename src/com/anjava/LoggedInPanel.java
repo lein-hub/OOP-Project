@@ -85,11 +85,11 @@ public class LoggedInPanel extends JPanel{
 		}
 	}
 	
-	private JSONArray sortJsonArray(JSONArray JsonArr, String KEY_NAME) {
+	private JSONArray sortJsonArray(JSONArray jsonArr, String KEY_NAME) {
 		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
 		JSONArray sortedJsonArray = new JSONArray();
-	    for (int i = 0; i < JsonArr.length(); i++) {
-	        jsonValues.add(JsonArr.getJSONObject(i));
+	    for (int i = 0; i < jsonArr.length(); i++) {
+	        jsonValues.add(jsonArr.getJSONObject(i));
 	    }
 	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
 	        @Override
@@ -101,7 +101,7 @@ public class LoggedInPanel extends JPanel{
 	        }
 	    });
 	    
-	    for (int i = 0; i < JsonArr.length(); i++) {
+	    for (int i = 0; i < jsonArr.length(); i++) {
 	        sortedJsonArray.put(jsonValues.get(i));
 	    }
 	    
