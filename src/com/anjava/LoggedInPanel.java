@@ -26,6 +26,30 @@ public class LoggedInPanel extends JPanel{
 										 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	
+	private JSONArray sortRoomsData(JSONArray roomsData) {
+		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+		JSONArray sortedJsonArray = new JSONArray();
+	    for (int i = 0; i < roomsData.length(); i++) {
+	        jsonValues.add(roomsData.getJSONObject(i));
+	    }
+	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
+	        private static final String KEY_NAME = "roomNum";
+
+	        @Override
+	        public int compare(JSONObject a, JSONObject b) {
+	            Integer valA = (Integer) a.get(KEY_NAME);
+	            Integer valB = (Integer) b.get(KEY_NAME);
+
+	            return valA.compareTo(valB);
+	        }
+	    });
+	    
+	    for (int i = 0; i < roomsData.length(); i++) {
+	        sortedJsonArray.put(jsonValues.get(i));
+	    }
+	    
+	    return sortedJsonArray;
+	}
 	
 	public LoggedInPanel(JSONArray roomsData){
 		this.boxCount = roomsData.length();
@@ -39,27 +63,9 @@ public class LoggedInPanel extends JPanel{
 		
 		//roomsData를 방 번호 순서로 정렬합니다!
 
-	    List<JSONObject> jsonValues = new ArrayList<JSONObject>();
-	    for (int i = 0; i < roomsData.length(); i++) {
-	        jsonValues.add(roomsData.getJSONObject(i));
-	    }
-	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
-	        private static final String KEY_NAME = "roomNum";
-
-	        @Override
-	        public int compare(JSONObject a, JSONObject b) {
-	            Integer valA = (Integer) a.get(KEY_NAME);
-	            Integer valB = (Integer) b.get(KEY_NAME);
-
-	            return valB.compareTo(valA);
-	        }
-	    });
-	    
-	    for (int i = roomsData.length()-1; i >= 0; i--) {
-	    	if (i == roomsData.length()-1) roomsData.clear();
-	    	roomsData.put(jsonValues.get(i));
-	    }
+	    roomsData = sortRoomsData(roomsData);
 		
+	    // btnPanel에 버튼을 추가합니다!
 		for(int i = 0; i < roomsData.length(); i++) {
 			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
 			int maxSit = roomsData.getJSONObject(i).getInt("maxSit");
