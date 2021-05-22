@@ -34,7 +34,7 @@ public class LoggedInPanel extends JPanel{
 		btnPanel.setPreferredSize(new Dimension(580, (boxCount / 4 + 1) * 106));
 		scroll.setPreferredSize(new Dimension(600, 400));
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
-		this.setBounds(6, 49, 600, 400);
+		this.setBounds(6, 49, 600, 405);
 		
 		//roomsData를 방 번호 순서로 정렬합니다!
 
@@ -47,32 +47,33 @@ public class LoggedInPanel extends JPanel{
 			int remainSit = roomsData.getJSONObject(i).getInt("remainSit");
 			boolean isUserIncluded = roomsData.getJSONObject(i).getBoolean("isUserIncluded");
 			String btnText = "<HTML>" + "방번호: " + roomNum + "<br>" + "남은 좌석: " + remainSit + "/" + maxSit;
-			if (!roomsData.getJSONObject(i).isNull("resetDate")) {
-				String datestr = roomsData.getJSONObject(i).getString("resetDate");
-				try {
-				    // 타임존이 포함된 ISO 8601 문자열로부터 Asia/Seoul 타임존의 LocaDateTime 오브젝트 획득
-				    LocalDateTime dateTime = LocalDateTime.from(
-
-				        Instant.from(
-				            DateTimeFormatter.ISO_DATE_TIME.parse(datestr)
-				        ).atZone(ZoneId.of("Asia/Seoul"))
-				    );
-				    datestr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
-				// 파씽 오류시 DateTimeParseException 예외 발생
-				} catch (DateTimeParseException ex) {
-					ex.printStackTrace();
-				    // 예외 처리 로직 작성
-				}
-				btnText += "<br>" + "좌석 초기화: " + datestr;
-				System.out.println(btnText);
-
-			}
-			reserveBtn[i] = new JButton(btnText);
+			
 			if (isUserIncluded) {
 				reserveBtn[i].setBackground(Color.orange);
-			}else {				
+				if (!roomsData.getJSONObject(i).isNull("resetDate")) {
+					String datestr = roomsData.getJSONObject(i).getString("resetDate");
+					try {
+					    // 타임존이 포함된 ISO 8601 문자열로부터 Asia/Seoul 타임존의 LocaDateTime 오브젝트 획득
+					    LocalDateTime dateTime = LocalDateTime.from(
+
+					        Instant.from(
+					            DateTimeFormatter.ISO_DATE_TIME.parse(datestr)
+					        ).atZone(ZoneId.of("Asia/Seoul"))
+					    );
+					    datestr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
+					// 파씽 오류시 DateTimeParseException 예외 발생
+					} catch (DateTimeParseException ex) {
+						ex.printStackTrace();
+					    // 예외 처리 로직 작성
+					}
+					btnText += "<br>" + "좌석 초기화: " + datestr;
+					System.out.println(btnText);
+
+				}
+			} else {				
 				reserveBtn[i].setBackground(Color.gray.brighter());
 			}
+			reserveBtn[i] = new JButton(btnText);
 			reserveBtn[i].setBorder(null);
 			reserveBtn[i].setPreferredSize(new Dimension(140,100));
 			reserveBtn[i].setFocusable(false);
