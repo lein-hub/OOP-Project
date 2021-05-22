@@ -38,7 +38,7 @@ public class LoggedInPanel extends JPanel{
 		
 		//roomsData를 방 번호 순서로 정렬합니다!
 
-	    roomsData = sortRoomsData(roomsData);
+	    roomsData = sortJsonArray(roomsData, "roomNum");
 		
 	    // btnPanel에 버튼을 추가합니다!
 		for(int i = 0; i < roomsData.length(); i++) {
@@ -85,15 +85,13 @@ public class LoggedInPanel extends JPanel{
 		}
 	}
 	
-	private JSONArray sortRoomsData(JSONArray roomsData) {
+	private JSONArray sortJsonArray(JSONArray JsonArr, String KEY_NAME) {
 		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
 		JSONArray sortedJsonArray = new JSONArray();
-	    for (int i = 0; i < roomsData.length(); i++) {
-	        jsonValues.add(roomsData.getJSONObject(i));
+	    for (int i = 0; i < JsonArr.length(); i++) {
+	        jsonValues.add(JsonArr.getJSONObject(i));
 	    }
 	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
-	        private static final String KEY_NAME = "roomNum";
-
 	        @Override
 	        public int compare(JSONObject a, JSONObject b) {
 	            Integer valA = (Integer) a.get(KEY_NAME);
@@ -103,7 +101,7 @@ public class LoggedInPanel extends JPanel{
 	        }
 	    });
 	    
-	    for (int i = 0; i < roomsData.length(); i++) {
+	    for (int i = 0; i < JsonArr.length(); i++) {
 	        sortedJsonArray.put(jsonValues.get(i));
 	    }
 	    
