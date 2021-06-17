@@ -31,14 +31,12 @@ public class LoggedInPanel extends JPanel{
 		this.reserveBtn = new JButton[boxCount];
 	
 		//PanelSetting
-		btnPanel.setPreferredSize(new Dimension(580, (boxCount / 4 + 1) * 106));
-		scroll.setPreferredSize(new Dimension(600, 400));
+		btnPanel.setPreferredSize(new Dimension(750, (boxCount / 4 + 1) * 100));
+		scroll.setPreferredSize(new Dimension(750, 405));
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
-		this.setBounds(6, 49, 600, 405);
+		this.setBounds(6, 49, 750, 405);
 		
 		//roomsData를 방 번호 순서로 정렬합니다!
-
-	    roomsData = sortJsonArray(roomsData, "roomNum");
 		
 	    // btnPanel에 버튼을 추가합니다!
 		for(int i = 0; i < roomsData.length(); i++) {
@@ -76,7 +74,7 @@ public class LoggedInPanel extends JPanel{
 			}
 			reserveBtn[i].setText(btnText);
 			reserveBtn[i].setBorder(null);
-			reserveBtn[i].setPreferredSize(new Dimension(140,100));
+			reserveBtn[i].setPreferredSize(new Dimension(130,100));
 			reserveBtn[i].setFocusable(false);
 			btnPanel.add(reserveBtn[i]);
 			scroll.setBorder(null);
@@ -88,28 +86,5 @@ public class LoggedInPanel extends JPanel{
 		}
 	}
 	
-	private <T extends Comparable<T>> JSONArray sortJsonArray(JSONArray jsonArr, String KEY_NAME) {
-		List<JSONObject> jsonValues = new ArrayList<JSONObject>();
-		JSONArray sortedJsonArray = new JSONArray();
-	    for (int i = 0; i < jsonArr.length(); i++) {
-	        jsonValues.add(jsonArr.getJSONObject(i));
-	    }
-	    Collections.sort( jsonValues, new Comparator<JSONObject>() {
-	        @SuppressWarnings("unchecked")
-			@Override
-	        public int compare(JSONObject a, JSONObject b) {
-	        	
-	        	T valA = (T) a.get(KEY_NAME);
-	            T valB = (T) b.get(KEY_NAME);
-
-	            return valA.compareTo(valB);
-	        }
-	    });
-	    
-	    for (int i = 0; i < jsonArr.length(); i++) {
-	        sortedJsonArray.put(jsonValues.get(i));
-	    }
-	    
-	    return sortedJsonArray;
-	}
+	
 }

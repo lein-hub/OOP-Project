@@ -13,18 +13,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
 
 class SeatsPanel extends JPanel implements ActionListener{
 	public JPanel buttonPanel = new JPanel();
+		
 		
 	   class  reserves{  
 	      
@@ -34,11 +33,7 @@ class SeatsPanel extends JPanel implements ActionListener{
 	      public reserves(int sitNum, String userId) {
 	         this.sitNum=sitNum;
 	         this.userId=userId;
-	      
-	         
 	      }
-	      
-
 	      
 	      public int getSitNum() {
 	         return sitNum;
@@ -59,36 +54,33 @@ class SeatsPanel extends JPanel implements ActionListener{
 	   }
 
 	   HttpCaller hc;
-	   boolean isAdmin =true;
+	   boolean admin =true;
 	   static int q;
 	   static String qq;
 	    
 	//   static JPanel mainPanel;
 	   
 //	   
-
+	   int roomNum;
 	   int column;
 	   int row;
 	   int maxseat;
-	   int roomNum;
-	   
 	   int reservedSeat;
 	   int[] otherReservedSeats;
 	   
 	   
-	   ArrayList<reserves> reservedData =new ArrayList<>();
+	   ArrayList<reserves> reservedData = new ArrayList<>();
 	   
 	   JButton[] btn;
 	   JButton[] btn2;
 	   
-	   int[] colblock = {2,5};
-	   boolean colbool =false;
-	   int[] rowblock = {3,7};
-	   boolean rowbool=false;
-
+	   int[] colblock;
+	   boolean cobool = false;
+	   int[] rowblock;
+	   boolean robool = false;
+	   
 	   public SeatsPanel(int col, int row, int[] colbl, int[] rowbl, int roomNum, int[] otherReservedSeats, HttpCaller hc) {
-//	      this.setLayout(null);
-	      this.hc = hc;
+		  this.hc = hc;
 		  this.roomNum = roomNum;
 	      this.setLayout(null);
 	      this.column = col + colbl.length;
@@ -96,7 +88,7 @@ class SeatsPanel extends JPanel implements ActionListener{
 	      this.colblock = colbl;
 	      this.rowblock = rowbl;
 	      this.maxseat = this.column * this.row;
-	      this.isAdmin = hc.isAdmin();
+	      this.admin = hc.isAdmin();
 	      this.otherReservedSeats = otherReservedSeats;
 	      JSONArray reservedRooms = new JSONObject(hc.getUserDetail()).getJSONObject("data").getJSONArray("reservedRooms");
 	      for (int i=0; i<reservedRooms.length(); i++) {
@@ -121,160 +113,123 @@ class SeatsPanel extends JPanel implements ActionListener{
 	      
 
 	         //열을 공백주는 배열을 만들어서 int k에 넣어서 j==k일때 널로(공백)
-//	         int abc=1;
-//	         for(int i=1; i<column+1; i++) {
-//	            for(int j=1; j<this.row+1; j++) {
-//	            	final int jj = j;
-//	            	final int ii = i;
-//	            	if (IntStream.of(rowblock).anyMatch(x -> x == jj) || IntStream.of(colblock).anyMatch(x -> x == ii)) {
-//	            		reservedData.add(new reserves(0, "null"));
-//	            	} else {
-//	            		reservedData.add(new reserves(abc++,"yet"));
-//	            	}
-//	            }
-//	         }
-	         
-	         int index=1;
-	         for(int i=0; i<this.column; i++) {
-	            for(int j=0; j<this.row; j++) {
-	            	final int jj = j;
-	            	final int ii = i;
-	            	final int iidx = index;
-	            	btn[i*this.row+j]=new JButton();
-		            btn[i*this.row+j].setPreferredSize(new Dimension(180,180));
-	            	if (IntStream.of(rowblock).anyMatch(x -> x == jj) || IntStream.of(colblock).anyMatch(x -> x == ii)) {
-	            		btn[i*this.row+j].setEnabled(false);
-		                btn[i*this.row+j].setBackground(Color.white);
-		                btn[i*this.row+j].setBorder(null);
-	            	} else {
-	            		if (index == reservedSeat) {
-	            			btn[i*this.row+j].setEnabled(true);
-			                btn[i*this.row+j].setBackground(Color.orange);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-	            		} else if (IntStream.of(otherReservedSeats).anyMatch(x -> x == iidx)) {
-	            			btn[i*this.row+j].setEnabled(true);
-			                btn[i*this.row+j].setBackground(Color.gray);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-	            		} else {
-	            			btn[i*this.row+j].setEnabled(true);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-			                btn[i*this.row+j].setBackground(Color.BLUE);
-			                btn[i*this.row+j].addMouseListener(m);
-			                if(isAdmin==false) {
-			                	btn[i*this.row+j].addActionListener(this);
-			                } else {
-			                    btn[i*this.row+j].addActionListener(new ActionListener() {
-			                        @Override
-			                        public void actionPerformed(ActionEvent e) {
-			                           for(int i=0; i<maxseat; i++) {
-			                              if(e.getSource()==btn[i]) {
-			                                 q=i;
-			                                 qq=btn[i].getText();
-			                              }
-			                           }
-			                           new yeyakcancels();
-			                        }
-			                    });
-			                }
-	            		}
-	            	}
-	            	buttonPanel.add(btn[i*this.row+j]);
-	            }
+	         int abc=1;
+	         for(int i=1; i<column+1; i++) {
+	            
+	            for(int j=1; j<row+1; j++) {
+	               for(int q: rowblock) {
+	                  if(i==q) {
+	                     reservedData.add(new reserves(0, "null"));
+	                     robool=true;
+	                     break;
+	                     
+	                  }
+	                  
+	               }
+	               if(robool==true) {
+	                  robool=false;
+	               continue;   
+	               }
+	               for(int k:colblock) {
+	                  if(j==k) {
+	                     reservedData.add(new reserves(0,"null"));
+	                     cobool=true;
+	                     break;
+	                  }
+	               }
+	               if(cobool==false) {
+	                  
+	                     reservedData.add(new reserves(abc++, "yet"));   
+	                  
+	               }
+	               
+	            
+	            cobool=false;
+	         }
 	         }
 	         
-//	         System.out.println(reservedData.size());
-//	         for (int a : rowblock) {
-//	        	 System.out.println("rowblock: " + a);
-//	         }
-//	         for (int a : colblock) {
-//	        	 System.out.println("colblock: " + a);
-//	         }
-//	         System.out.println("rowblock 길이: " + rowblock.length);
-//	         System.out.println("colblock 길이: " + colblock.length);
-//	         System.out.println("col: " + col);
-//	         System.out.println("row: " + row);
-//	         System.out.println("this.column: " + this.column);
-//	         System.out.println("this.row: " + this.row);
-//	         System.out.println("maxseat :" + maxseat);
-	         
-//	            for(int i=0; i<maxseat; i++) {
-//	               btn[i]=new JButton();
-//	               btn[i].setPreferredSize(new Dimension(180,180));
-//	               //완전 빈칸(빈자리)
-//	               if(reservedData.get(i).getSitNum()==0&& reservedData.get(i).getUserId()!="yet") {
-//	                  btn[i].setEnabled(false);
-//	                  btn[i].setBackground(Color.white);
-//	                  btn[i].setBorder(null);
-//	                  
-//	               }else//sitnum가 0이아니고 yet인자리-->빈자리 
-//	               {
-//	                  btn[i].setEnabled(true);
-//	                  btn[i].setBackground(Color.BLUE);
-//	                  btn[i].setText((reservedData.get(i).getSitNum())+"");
-//	                  btn[i].addMouseListener(m);
-//	                  if(isAdmin==false) {
-//	                  btn[i].addActionListener(this);
-//	                  }else {
-//	                     btn[i].addActionListener(new ActionListener() {
-//	                        
-//	                        @Override
-//	                        public void actionPerformed(ActionEvent e) {
-//	                           for(int i=0; i<maxseat; i++) {
-//	                              if(e.getSource()==btn[i]) {
-//	                                 q=i;
-//	                                 qq=btn[i].getText();
-//	                                 
-//	                              }
-//	                        }
-//	                           new yeyakcancels();
-//	                        }
-//	                     });
-//	                     }
-//	                  }
-//	                  if(reservedData.get(i).getUserId()=="aio")//sitnum이 0이 아니고 그중에 aio-->예약된자리
-//	                     
-//	                  {
-//	                     btn[i].setBackground(Color.red);
-//	                     btn[i].setText("예약완료");
-//	                     btn[i].setEnabled(false);
-//	                     btn[i].addMouseListener(new MouseListener() {
-//	                        
-//	                        
-//	                        public void mouseReleased(MouseEvent e) {
-//	                        }
-//	                        
-//	                        
-//	                        public void mousePressed(MouseEvent e) {
-//	                        }
-//	                        
-//	                        
-//	                        public void mouseExited(MouseEvent e) {
-//	                            JButton b = (JButton)e.getSource();
-//	                                b.setBackground(Color.red);
-//	                        }
-//	                        
-//	                        public void mouseEntered(MouseEvent e) {
-//	                            JButton b = (JButton)e.getSource();
-//	                                b.setBackground(Color.red);
-//	                        }
-//	                        
-//	                        public void mouseClicked(MouseEvent e) {
-//	                           
-//	                        }
-//	                     });
-//	                     
-//	                  }
-//	               buttonPanel.add(btn[i]);
-//	            }
+	            for(int i=0; i<maxseat; i++) {
+	               btn[i]=new JButton();
+	               btn[i].setPreferredSize(new Dimension(180,180));
+	               //완전 빈칸(빈자리)
+	               if(reservedData.get(i).getSitNum()==0&& reservedData.get(i).getUserId()!="yet") {
+	                  btn[i].setEnabled(false);
+	                  btn[i].setBackground(Color.white);
+	                  btn[i].setBorder(null);
+	                  
+	               }else//sitnum가 0이아니고 yet인자리-->빈자리 
+	               {
+	                  btn[i].setEnabled(true);
+	                  btn[i].setText((reservedData.get(i).getSitNum())+"");
+	                  if (reservedData.get(i).getSitNum() == reservedSeat) {
+		                  btn[i].setBackground(Color.orange);
+	                  } else {
+	                	  btn[i].setBackground(Color.BLUE);
+	                  }
+	                  btn[i].addMouseListener(m);
+	                  if(admin==false) {
+	                  btn[i].addActionListener(this);
+	                  }else {
+	                     btn[i].addActionListener(new ActionListener() {
+	                        
+	                        @Override
+	                        public void actionPerformed(ActionEvent e) {
+	                           for(int i=0; i<maxseat; i++) {
+	                              if(e.getSource()==btn[i]) {
+	                                 q=i;
+	                                 qq=btn[i].getText();
+	                                 
+	                              }
+	                           }
+	                           new yeyakcancels();
+	                        }
+	                     });
+	                     }
+	                  }
+	                  if(reservedData.get(i).getUserId()=="aio")//sitnum이 0이 아니고 그중에 aio-->예약된자리
+	                     
+	                  {
+	                     btn[i].setBackground(Color.red);
+	                     btn[i].setText("예약완료");
+	                     btn[i].setEnabled(false);
+	                     btn[i].addMouseListener(new MouseListener() {
+	                        
+	                        
+	                        public void mouseReleased(MouseEvent e) {
+	                        }
+	                        
+	                        
+	                        public void mousePressed(MouseEvent e) {
+	                        }
+	                        
+	                        
+	                        public void mouseExited(MouseEvent e) {
+	                            JButton b = (JButton)e.getSource();
+	                                b.setBackground(Color.red);
+	                        }
+	                        
+	                        public void mouseEntered(MouseEvent e) {
+	                            JButton b = (JButton)e.getSource();
+	                                b.setBackground(Color.red);
+	                        }
+	                        
+	                        public void mouseClicked(MouseEvent e) {
+	                           
+	                        }
+	                     });
+	                     
+	                  }
+	               buttonPanel.add(btn[i]);
+	            }
 
 	               add(buttonPanel);
 	              
 	                buttonPanel.setBounds(30,100,700,400);
-	                repaint();     
+	                repaint();  
+	                
 	   }
 	   
 	   //------------------------------------------
-	   
 	   
 	   
 	   

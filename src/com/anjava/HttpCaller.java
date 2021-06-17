@@ -247,7 +247,6 @@ public class HttpCaller {
 		String password = "";
 		for (char a : pw) password += a;
 		String result = this.request("POST", url+"users/", "{\"userId\":\""+id+"\",\"password\":\""+password+"\"}");
-		System.out.println(password);
 		if (isSuccessful) {
 			JSONObject jo = new JSONObject(result).getJSONObject("data");
 			this.id = id;
