@@ -100,6 +100,13 @@ class SeatsPanel extends JPanel {
 	    	  }
 	      }
 	      btn = new MyButton[maxseat];
+	      
+	      for (int i = 0; i < rowblock.length; i++) {
+	    	  rowblock[i] = rowblock[i] + i;
+	      }
+	      for (int i = 0; i < colblock.length; i++) {
+	    	  colblock[i] = colblock[i] + i;
+	      }
 
 //	         topLabel=new JLabel("안녕하세요. user.name님");
 	         buttonPanel=new JPanel();
