@@ -31,27 +31,7 @@ public class TestField {
 		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).isNull("resetDate"));
 		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
 //		System.out.println(roomsData.getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
-		
-//		System.out.println(hc.getOneRoom(205));
-		for (int i=100; i<120; i++) {
-		System.out.println(hc.postCreateRoom(i,7,8));
-		}
-		System.out.println(hc.deleteRoom(999));
-//		System.out.println(hc.getUserDetail());
-//		System.out.println(hc.getOneRoom(204));
-		
-		
-	    //I assume that we need to create a JSONArray object from the following string
-	    String jsonArrStr = "[ { \"ID\": \"135\", \"Name\": \"Fargo Chan\" },{ \"ID\": \"432\", \"Name\": \"Aaron Luke\" },{ \"ID\": \"252\", \"Name\": \"Dilip Singh\" }]";
-
-	    class MyActionListener implements ActionListener {
-
-	    	@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-	    }
+		hc.postCreateRoom(1215, 5, 5, null, fst);
 	}
 
 }

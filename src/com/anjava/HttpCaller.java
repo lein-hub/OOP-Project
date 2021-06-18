@@ -267,8 +267,8 @@ public class HttpCaller {
 	 * @param roomNum 은 새로 만들 방 호수입니다.
 	 * @param col 은 좌석 열갯수 입니다.
 	 * @param row 는 좌석 행갯수 입니다.
-	 * @param rowBlank 은 띄울 행번호입니다. 띄우지 않으려면 null을 입력하세요.
 	 * @param colBlank 은 띄울 열번호입니다. 띄우지 않으려면 null을 입력하세요.
+	 * @param rowBlank 은 띄울 행번호입니다. 띄우지 않으려면 null을 입력하세요.
 	 * @return <pre>{
     "roomNum": 방의 번호 int,
     "column": 세로줄 int,
@@ -283,7 +283,7 @@ public class HttpCaller {
     ]
 }</pre>
 	 */
-	public String postCreateRoom(int roomNum, int col, int row, int[] rowBlank, int[] colBlank) {  // 방을 생성하는 요청
+	public String postCreateRoom(int roomNum, int col, int row, int[] colBlank, int[] rowBlank) {  // 방을 생성하는 요청
 		JSONObject jo = new JSONObject();
 		
 		jo.put("roomNum", roomNum);
@@ -292,7 +292,7 @@ public class HttpCaller {
 		if (rowBlank != null)
 		jo.put("rowBlankLine", rowBlank);
 		if (colBlank != null)
-		jo.put("colBlankLine", colBlank);
+		jo.put("columnBlankLine", colBlank);
 		System.out.println(jo.toString());
 		return this.request("POST", url+"room/", jo.toString());
 	}

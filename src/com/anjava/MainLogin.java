@@ -1,5 +1,6 @@
 package com.anjava;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,7 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.*;
 
@@ -21,13 +22,14 @@ import org.json.JSONObject;
 
 
 public class MainLogin extends JFrame implements ActionListener, KeyListener{
-	JPanel logInPanel, signUpBtnPanel, imagePanel, signUpMainPanel;
-	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel;
+	JPanel logInPanel, signUpBtnPanel, imagePanel, signUpMainPanel, cRoomPanel;
+	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel, colLabel, rowLabel, colBlankLabel, rowBlankLabel, roomNumLabel;
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
-	JTextField ID;
-	JPasswordField PASSWORD;
-	JButton logInBtn, signUpBtn, signUpBtn2, exitButton, backBtn, logOutBtn, mainBtn;
+	JTextField ID, col, row, roomNum, colBlank, rowBlank;
+	JPasswordField PASSWORD;;
+	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn;
 	LoggedInPanel loggedInPanel;
+	FakeDB fake = new FakeDB();
 	Font Title = new Font(null);
 	ImageIcon icon;
 	HttpCaller hc = new HttpCaller();
@@ -95,8 +97,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		ID.setBounds(64,20,135,20);
 		ID.addKeyListener(this);
 		ID.setText("test6");
-//		ID.addKeyListener(this);
-//		ID.registerKeyboardAction(this, "login", KeyStroke.getKeyStroke(KeyEvent.VK_ENTER,0), JComponent.WHEN_FOCUSED);
+
 		 //Password
 		PASSWORD = new JPasswordField(15);
 		PASSWORD.setBounds(64,45,135,20);
@@ -114,11 +115,35 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		logInBtn.setBackground(Color.LIGHT_GRAY);
 		logInBtn.addActionListener(this);
 		
-		
-		 //Main Button
+		//main Button
 		mainBtn = new JButton("뒤로가기");
 		mainBtn.setBounds(598, 464, 84, 25);
-		      
+		
+		//create Room Button
+		cRoom = new JButton("방만들기");
+		cRoom.setBounds(622,58,160,100);
+		cRoom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new createRoom();
+			}			
+		});
+		
+		//delete Room Button
+		dRoom = new JButton("방지우기");
+		dRoom.setBounds(622,204,160,100);
+		dRoom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               // TODO Auto-generated method stub
+               String input = JOptionPane.showInputDialog("지울 방의 호수를 입력하세요.");
+               hc.deleteRoom(Integer.valueOf(input));
+            }
+         });
+		
+		//reset Date Button
+		resetDate = new JButton("초기화날짜설정");
+		resetDate.setBounds(622,350,160,100);
 		
 		 //SignUp Button
 		signUpBtn = new JButton("회원가입");
@@ -139,21 +164,21 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		logOutBtn = new JButton("로그아웃");
 		logOutBtn.setVisible(true);
 		logOutBtn.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
 				addMainLogIn();
 				deleteLoggedInPanel();
 				hc.clearData();
-//				deleteSeats();
-//				addAdminBtn();
 				if (seatsPanel != null) deleteSeats();
+				deleteAdminBtn();
 				welcome.setVisible(false);
-				loggedInPanel.reserve.setVisible(false);			
+				if(cRoomPanel != null)
+				cRoomPanel.setVisible(false);
 				}
 			
 		});
-		logOutBtn.setBounds(691, 464, 84, 25);
+		logOutBtn.setBounds(699, 464, 84, 25);
 		
 		
 		//회원가입 창 입력항목 설정
@@ -208,28 +233,28 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		if(e.getSource()==logInBtn) {
 			hc.postLogIn(ID.getText(), PASSWORD.getPassword());
 			add(mainBtn);
-	         mainBtn.addActionListener(new ActionListener() {
-
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	               addLoggedInPanel();
-	               deleteSeats();
-	               mainBtn.setVisible(false);
-	            }
-	         });
-	         mainBtn.setVisible(false);
+			addAdminBtn();
 			
+			//로그인 된 창에서 뒤로가기 눌렀을 때
+			mainBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					addLoggedInPanel();
+					deleteSeats();
+					addAdminBtn();
+					mainBtn.setVisible(false);
+				}
+			});
+			mainBtn.setVisible(false);
 			//로그인 정보가 일치할 때
-			if(hc.isLoggedIn()) {	
+			if(hc.isLoggedIn()) {		
 				roomsData = new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData");
 			    roomsData = sortJsonArray(roomsData, "roomNum");
 				loggedInPanel = new LoggedInPanel(roomsData);
 				addLoggedInPanel();
 				deleteMainLogIn();
 				setLogInTextEmpty();
-				
-
-				
 				//로그인 했을 때 생기는 Buttons
 				
 				for(int i = 0; i < loggedInPanel.boxCount; i++) {
@@ -242,6 +267,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //												deleteLoggedInPanel();
 												loggedInPanel.setVisible(false);
 												addSeats(roomNum);
+												deleteAdminBtn();
+												
 //												deleteReserveBtn();
 												loggedInPanel.reserve.setVisible(false);
 												mainBtn.setVisible(true);
@@ -367,24 +394,121 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	public void addLoggedInPanel() {
 		add(loggedInPanel);
 		if(hc.isAdmin()) {
-			add(loggedInPanel.reserve);
+//			add(loggedInPanel.reserve);
 			loggedInPanel.btnPanel.setPreferredSize(new Dimension(600, (50 / 4 + 1) * 100));
 			loggedInPanel.scroll.setPreferredSize(new Dimension(600, 405));
 			loggedInPanel.setBounds(6, 49, 600, 405);
-//			add(cRoom);
-//	        cRoom.setBounds(615,54,160,100);
-//	        add(dRoom);
-//	        dRoom.setBounds(615,203,160,100);
-//	        add(resetDate);
-//	        resetDate.setBounds(615,354,160,100);
-
+			add(cRoom);
+			add(dRoom);
+			add(resetDate);
 		}
-		loggedInPanel.reserve.setVisible(true);
 		add(welcome);
 		welcome.setVisible(true);
 		loggedInPanel.setVisible(true);
 		welcome.setText("안녕하세요. " + hc.getName() + "님");
 		add(logOutBtn);
+	}
+	
+	class createRoom extends JFrame implements ActionListener{
+		public createRoom() {
+		
+		setSize(370,347);
+		setLayout(null);
+		roomNum = new JTextField();
+		roomNum.setBounds(125,35,150,25);
+		roomNum.setToolTipText("숫자로만 입력하세요.");
+		roomNumLabel = new JLabel("강의실 호수");
+		roomNumLabel.setBounds(48,35,70,25);
+		roomNumLabel.setHorizontalAlignment(JLabel.RIGHT);
+		add(roomNumLabel);
+		add(roomNum);
+		
+		col = new JTextField();
+		col.setBounds(125,82,150,25);
+		col.setToolTipText("숫자로만 입력하세요.");
+		colLabel = new JLabel("열 수");
+		colLabel.setBounds(65,82,50,25);
+		colLabel.setHorizontalAlignment(JLabel.RIGHT);
+		add(colLabel);
+		add(col);
+		
+
+		row = new JTextField();
+		row.setBounds(125,129,150,25);
+		row.setToolTipText("숫자로만 입력하세요.");
+		rowLabel = new JLabel("행 수");
+		rowLabel.setBounds(65,129,50,25);
+		rowLabel.setHorizontalAlignment(JLabel.RIGHT);
+		add(rowLabel);
+		add(row);
+		
+		
+		colBlank = new JTextField();
+		colBlank.setBounds(125,176,150,25);
+		colBlankLabel = new JLabel("열 띄우기");
+		colBlankLabel.setBounds(35,176,80,25);
+		colBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+		add(colBlankLabel);
+		add(colBlank);
+		
+		rowBlank = new JTextField();
+		rowBlank.setBounds(125,223,150,25);
+		rowBlankLabel = new JLabel("행 띄우기");
+		rowBlankLabel.setBounds(35,223,80,25);
+		rowBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+		add(rowBlankLabel);
+		add(rowBlank);
+		
+		makeRoomBtn = new JButton("방만들기");
+		makeRoomBtn.addActionListener(this);
+		makeRoomBtn.setBounds(190,265,85,25);
+		add(makeRoomBtn);
+//			
+//			cRoomPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+//			cRoomPanel.setLayout(new GridLayout(4,2,15,15));
+//			cRoomPanel.setBounds(63,78,500,350);
+//			add(cRoomPanel);
+		setLocationRelativeTo(null);
+		setVisible(true);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			StringTokenizer colst = new StringTokenizer(colBlank.getText(), ", ");
+			StringTokenizer rowst = new StringTokenizer(rowBlank.getText(), ", ");
+			int[] colBlankArray = new int[colst.countTokens()];
+			int[] rowBlankArray = new int[rowst.countTokens()];
+			
+			System.out.println("coltokencount: " + colst.countTokens());
+			System.out.println("rowtokencount: " + rowst.countTokens());
+			
+			for (int i=0; i<colBlankArray.length; i++) {
+				colBlankArray[i] = Integer.valueOf(colst.nextToken());
+			}
+			for (int i=0; i<rowBlankArray.length; i++) {
+				rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+			}
+			
+			for (int a : colBlankArray) {
+				System.out.println("colblank: " + a);
+			}
+			for (int a : rowBlankArray) {
+				System.out.println("rowblank: " + a);
+			}
+			System.out.println("colblanklength: " + colBlankArray.length);
+			System.out.println("rowblanklength: " + rowBlankArray.length);
+			
+			hc.postCreateRoom(Integer.valueOf(roomNum.getText()), 
+							  Integer.valueOf(col.getText()), 
+							  Integer.valueOf(row.getText()), 
+							  colBlankArray.length == 0 ? null : colBlankArray,
+							  rowBlankArray.length == 0 ? null : rowBlankArray);
+			dispose();
+			loggedInPanel.revalidate();
+			loggedInPanel.repaint();
+			repaint();
+		}
+		
 	}
 	
 	public void deleteLoggedInPanel() {
@@ -446,20 +570,10 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		seatsPanel.setVisible(true);
 	}
 	
-//	public void deleteAdminBtn() {
-//	      cRoom.setVisible(false);
-//	      dRoom.setVisible(false);
-//	      resetDate.setVisible(false);
-//	   }
-//	   
-//	   public void addAdminBtn() {
-//	      cRoom.setVisible(true);
-//	      dRoom.setVisible(true);
-//	      resetDate.setVisible(true);
-//	   }
 	public void deleteSeats() {
-		seatsPanel.setVisible(false);
+
 		mainBtn.setVisible(false);
+		seatsPanel.setVisible(false);
 	}
 	
 	public void addReserveBtn() {
@@ -471,6 +585,20 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	public void deleteReserveBtn() {
 		for(int i=0; i <loggedInPanel.boxCount; i++) {
 			loggedInPanel.reserveBtn[i].setVisible(true);
+		}
+	}
+	
+	public void deleteAdminBtn() {
+		cRoom.setVisible(false);
+		dRoom.setVisible(false);
+		resetDate.setVisible(false);
+	}
+	
+	public void addAdminBtn() {
+		if(hc.isAdmin()) {
+		cRoom.setVisible(true);
+		dRoom.setVisible(true);
+		resetDate.setVisible(true);
 		}
 	}
 	
@@ -499,11 +627,10 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	    return sortedJsonArray;
 	}
 	
-	
-	
 	//key events
 	@Override
 	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
 		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 			logInBtn.doClick();
 		}
