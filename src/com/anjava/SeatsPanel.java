@@ -114,7 +114,7 @@ class SeatsPanel extends JPanel {
 //	         topLabel.setFont(new Font("202호실 예약", Font.BOLD, 30));
 	         
 	         
-	         buttonPanel.setLayout(new GridLayout(column,row,10,20));
+	         buttonPanel.setLayout(new GridLayout(row,column,10,20));
 	         buttonPanel.setBackground(Color.white);
 	         
 	      
@@ -122,40 +122,40 @@ class SeatsPanel extends JPanel {
 	         //열을 공백주는 배열을 만들어서 int k에 넣어서 j==k일때 널로(공백)
 	         
 	         int index=1;
-	         for(int i=0; i<this.column; i++) {
-	            for(int j=0; j<this.row; j++) {
+	         for(int i=0; i<this.row; i++) {
+	            for(int j=0; j<this.column; j++) {
 	            	final int jj = j;
 	            	final int ii = i;
 	            	final int iidx = index;
-	            	btn[i*this.row+j]=new MyButton();
-		            btn[i*this.row+j].setPreferredSize(new Dimension(180,180));
-	            	if (IntStream.of(rowblock).anyMatch(x -> x == jj) || IntStream.of(colblock).anyMatch(x -> x == ii)) {
+	            	btn[i*this.column+j]=new MyButton();
+		            btn[i*this.column+j].setPreferredSize(new Dimension(180,180));
+	            	if (IntStream.of(colblock).anyMatch(x -> x == jj) || IntStream.of(rowblock).anyMatch(x -> x == ii)) {
 	            		// 공백일 때
-	            		btn[i*this.row+j].setEnabled(false);
-		                btn[i*this.row+j].setBackground(Color.white);
-		                btn[i*this.row+j].setBorder(null);
+	            		btn[i*this.column+j].setEnabled(false);
+		                btn[i*this.column+j].setBackground(Color.white);
+		                btn[i*this.column+j].setBorder(null);
 	            	} else {
 	            		if (index == myReservedSeat) {
 	            			// 내가 예약한 자리 일 때
-	            			btn[i*this.row+j].setEnabled(true);
-			                btn[i*this.row+j].setBackground(Color.orange);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-		            		btn[i*this.row+j].setStatus(1);
+	            			btn[i*this.column+j].setEnabled(true);
+			                btn[i*this.column+j].setBackground(Color.orange);
+		            		btn[i*this.column+j].setText(String.valueOf(index++));
+		            		btn[i*this.column+j].setStatus(1);
 	            		} else if (IntStream.of(otherReservedSeats).anyMatch(x -> x == iidx)) {
 	            			// 다른사람이 예약한 자리일 때
-	            			btn[i*this.row+j].setEnabled(true);
-			                btn[i*this.row+j].setBackground(Color.gray);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-		            		btn[i*this.row+j].setStatus(2);
+	            			btn[i*this.column+j].setEnabled(true);
+			                btn[i*this.column+j].setBackground(Color.gray);
+		            		btn[i*this.column+j].setText(String.valueOf(index++));
+		            		btn[i*this.column+j].setStatus(2);
 	            		} else {
 	            			// 빈 자리일 때
-	            			btn[i*this.row+j].setEnabled(true);
-		            		btn[i*this.row+j].setText(String.valueOf(index++));
-			                btn[i*this.row+j].setBackground(Color.BLUE);
-			                btn[i*this.row+j].setStatus(0);
+	            			btn[i*this.column+j].setEnabled(true);
+		            		btn[i*this.column+j].setText(String.valueOf(index++));
+			                btn[i*this.column+j].setBackground(Color.BLUE);
+			                btn[i*this.column+j].setStatus(0);
 	            		}
 	            	}
-	            	btn[i*this.row+j].addActionListener(new ActionListener() {
+	            	btn[i*this.column+j].addActionListener(new ActionListener() {
 	                    @Override
 	                    public void actionPerformed(ActionEvent e) {
 	                       for(int i=0; i<maxseat; i++) {
@@ -165,7 +165,7 @@ class SeatsPanel extends JPanel {
 	                       }
 	                    }
 	                });
-	            	buttonPanel.add(btn[i*this.row+j]);
+	            	buttonPanel.add(btn[i*this.column+j]);
 //	            	buttonPanel.setBackground(Color.);
 	             }
 	         }

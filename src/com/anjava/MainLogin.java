@@ -435,6 +435,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		welcome.setText("안녕하세요. " + hc.getName() + "님");
 		add(logOutBtn);
 		add(loggedInPanel);
+		
+		
 	}
 	
 	class CreateRoom extends JFrame implements ActionListener{
@@ -818,6 +820,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		cRoom.setVisible(false);
 		dRoom.setVisible(false);
 		resetDate.setVisible(false);
+		aRoom.setVisible(false);
 	}
 	
 	public void addAdminBtn() {
@@ -825,6 +828,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		cRoom.setVisible(true);
 		dRoom.setVisible(true);
 		resetDate.setVisible(true);
+		aRoom.setVisible(true);
 		}
 	}
 	
