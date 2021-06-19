@@ -114,7 +114,7 @@ class SeatsPanel extends JPanel {
 //	         topLabel.setFont(new Font("202호실 예약", Font.BOLD, 30));
 	         
 	         
-	         buttonPanel.setLayout(new GridLayout(row,column,10,20));
+	         buttonPanel.setLayout(new GridLayout(this.row,column,10,20));
 	         buttonPanel.setBackground(Color.white);
 	         
 	      

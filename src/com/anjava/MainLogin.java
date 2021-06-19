@@ -28,7 +28,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum;
 	JPasswordField PASSWORD;;
-	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom;
+	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom, refresh;
 	LoggedInPanel loggedInPanel;
 	FakeDB fake = new FakeDB();
 	Font Title = new Font(null);
@@ -120,6 +120,20 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		mainBtn = new JButton("뒤로가기");
 		mainBtn.setBounds(598, 464, 84, 25);
 		
+		
+		
+		mainBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				refreshLoggedInPanel();
+				refresh.setVisible(true);
+				deleteSeats();
+				mainBtn.setVisible(false);
+			}
+		});
+		
+		
 		//create Room Button
 		cRoom = new JButton("방만들기");
 		cRoom.setBounds(622,58,160,70);
@@ -179,6 +193,22 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			}
 		});
 		
+		//refresh button
+	      refresh = new JButton("새로고침");
+	      refresh.setBounds(500, 464, 84, 25);
+	      refresh.addActionListener(new ActionListener() {
+
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+	        	 loggedInPanel.setVisible(false);
+	        	 deleteAdminBtn();
+	        	 refreshLoggedInPanel();
+	         }
+	         
+	      });
+	      refresh.setVisible(false);
+	      add(refresh);
+		
 		 //LogOutButton
 		logOutBtn = new JButton("로그아웃");
 		logOutBtn.setVisible(true);
@@ -194,7 +224,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				welcome.setVisible(false);
 				if(cRoomPanel != null)
 				cRoomPanel.setVisible(false);
-				}
+				refresh.setVisible(false);
+			}
 			
 		});
 		logOutBtn.setBounds(699, 464, 84, 25);
@@ -242,7 +273,43 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		this.setVisible(true);
 	}
 
-	
+	public void refreshLoggedInPanel() {
+		roomsData = new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData");
+	    roomsData = sortJsonArray(roomsData, "roomNum");
+		loggedInPanel = new LoggedInPanel(roomsData);
+		
+		for(int i = 0; i < loggedInPanel.boxCount; i++) {
+			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
+			if (roomsData.getJSONObject(i).isNull("acceptDate")) {
+				loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+//										remove(loggedInPanel);
+//										deleteLoggedInPanel();
+						loggedInPanel.setVisible(false);
+						addSeats(roomNum);
+						deleteAdminBtn();
+						
+						mainBtn.setVisible(true);
+					}
+				});
+			} else {
+				loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						JOptionPane.showMessageDialog(null, "아직 예약할 수 없습니다.", "Message", JOptionPane.ERROR_MESSAGE);
+			            
+					}
+					
+				});
+			}
+		}
+		addLoggedInPanel();
+		addAdminBtn();
+		
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -255,25 +322,17 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			addAdminBtn();
 			
 			//로그인 된 창에서 뒤로가기 눌렀을 때
-			mainBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
-					addLoggedInPanel();
-					deleteSeats();
-					addAdminBtn();
-					mainBtn.setVisible(false);
-				}
-			});
+			
 			mainBtn.setVisible(false);
 			//로그인 정보가 일치할 때
-			if(hc.isLoggedIn()) {		
+			if(hc.isLoggedIn()) {
 				roomsData = new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData");
 			    roomsData = sortJsonArray(roomsData, "roomNum");
 				loggedInPanel = new LoggedInPanel(roomsData);
 				addLoggedInPanel();
 				deleteMainLogIn();
 				setLogInTextEmpty();
+				refresh.setVisible(true);
 				//로그인 했을 때 생기는 Buttons
 				
 				for(int i = 0; i < loggedInPanel.boxCount; i++) {
@@ -288,7 +347,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 								loggedInPanel.setVisible(false);
 								addSeats(roomNum);
 								deleteAdminBtn();
-								
+								refresh.setVisible(false);
 								mainBtn.setVisible(true);
 							}
 						});
@@ -540,6 +599,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //			loggedInPanel.revalidate();
 //			loggedInPanel.repaint();
 //			addLoggedInPanel();
+			loggedInPanel.setVisible(false);
+			deleteAdminBtn();
+			refreshLoggedInPanel();
 			dispose();
 		}
 		
@@ -579,6 +641,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	            hc.deleteRoom(Integer.valueOf(deleteNum.getText()));
 	            JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
 //	            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    		loggedInPanel.setVisible(false);
+	    		deleteAdminBtn();
+	            refreshLoggedInPanel();
 	            dispose();
 	         }
 	         
@@ -658,6 +723,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	         System.out.println(hc.patchResetDateRoom(Integer.valueOf(fields[0].getText()), date));
 //	         Date date = new Date(122,11,10,12,12);
 //	         hc.patchResetDateRoom(11, date);
+	 		 loggedInPanel.setVisible(false);
+			 deleteAdminBtn();
+	         refreshLoggedInPanel();
 	         dispose();
 	      }
 	   }
@@ -734,6 +802,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	         System.out.println(hc.patchAcceptDateRoom(Integer.valueOf(fields[0].getText()), date));
 //	         Date date = new Date(122,11,10,12,12);
 //	         hc.patchResetDateRoom(11, date);
+	 		 loggedInPanel.setVisible(false);
+			 deleteAdminBtn();
+	         refreshLoggedInPanel();
 	         dispose();
 	      }
 	   }
