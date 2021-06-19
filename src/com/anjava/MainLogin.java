@@ -647,11 +647,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //	            }
 //	         }
 	         @SuppressWarnings("deprecation")
-	         int year = Integer.valueOf(fields[1].getText())-1900;
-	         int month = Integer.valueOf(fields[2].getText())-1;
-	         int day = Integer.valueOf(fields[3].getText());
-	         int hour = Integer.valueOf(fields[4].getText());
-	         int minute = Integer.valueOf(fields[5].getText());
+	         int year = fields[1].getText() == "" ? 0 : Integer.valueOf(fields[1].getText())-1900;
+	         int month = fields[2].getText() == "" ? 0 : Integer.valueOf(fields[2].getText())-1;
+	         int day = fields[3].getText() == "" ? 0 : Integer.valueOf(fields[3].getText());
+	         int hour = fields[4].getText() == "" ? 0 : Integer.valueOf(fields[4].getText());
+	         int minute = fields[5].getText() == "" ? 0 : Integer.valueOf(fields[5].getText());
 	         Date date = new Date(year, month, day, hour, minute);
 	         System.out.println(hc.patchResetDateRoom(Integer.valueOf(fields[0].getText()), date));
 //	         Date date = new Date(122,11,10,12,12);
@@ -723,11 +723,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //	            }
 //	         }
 	         @SuppressWarnings("deprecation")
-	         int year = Integer.valueOf(fields[1].getText())-1900;
-	         int month = Integer.valueOf(fields[2].getText())-1;
-	         int day = Integer.valueOf(fields[3].getText());
-	         int hour = Integer.valueOf(fields[4].getText());
-	         int minute = Integer.valueOf(fields[5].getText());
+	         int year = fields[1].getText() == "" ? 0 : Integer.valueOf(fields[1].getText())-1900;
+	         int month = fields[2].getText() == "" ? 0 : Integer.valueOf(fields[2].getText())-1;
+	         int day = fields[3].getText() == "" ? 0 : Integer.valueOf(fields[3].getText());
+	         int hour = fields[4].getText() == "" ? 0 : Integer.valueOf(fields[4].getText());
+	         int minute = fields[5].getText() == "" ? 0 : Integer.valueOf(fields[5].getText());
 	         Date date = new Date(year, month, day, hour, minute);
 	         System.out.println(hc.patchAcceptDateRoom(Integer.valueOf(fields[0].getText()), date));
 //	         Date date = new Date(122,11,10,12,12);
