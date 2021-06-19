@@ -31,7 +31,9 @@ public class TestField {
 		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).isNull("resetDate"));
 		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
 //		System.out.println(roomsData.getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
-		hc.postCreateRoom(1215, 5, 5, null, fst);
+		
+		Date date = new Date(122, 7, 20, 13, 0);
+		System.out.println(hc.patchResetDateRoom(55, date));
 	}
 
 }

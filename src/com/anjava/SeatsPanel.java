@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.stream.IntStream;
 
 import javax.swing.JButton;
@@ -165,6 +166,7 @@ class SeatsPanel extends JPanel {
 	                    }
 	                });
 	            	buttonPanel.add(btn[i*this.row+j]);
+//	            	buttonPanel.setBackground(Color.);
 	             }
 	         }
 	         add(buttonPanel);
@@ -174,7 +176,10 @@ class SeatsPanel extends JPanel {
 	   
 	   
 	   
-	   //-----------------------------------------------------------------------
+
+
+
+	//-----------------------------------------------------------------------
 	   //예약하시겠습니까?
 	   class yeyakok extends JFrame implements ActionListener {
 	      JLabel topLabel;
@@ -198,14 +203,26 @@ class SeatsPanel extends JPanel {
 	        		  add(topLabel,BorderLayout.CENTER);
 	        		  setSize(250, 100);
 	        	  } else {
-	        		  topLabel.setText(number+" 번 좌석을 예약하시겠습니까?");
-			          yesbtn = new JButton("네");
-			          yesbtn.addActionListener(this);
-			          noBtn = new JButton("아니오");
-			          noBtn.addActionListener(this);
-			          add(topLabel,BorderLayout.NORTH);
-			          add(yesbtn,BorderLayout.WEST);
-			          add(noBtn,BorderLayout.EAST);
+	        		  JSONObject rsvd = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData").getJSONObject("reservedData");
+	    			  int[] reservedData = new int[rsvd.length()];
+	    			  Iterator<String> iter = rsvd.keys();
+	    			  for (int i=0; i<reservedData.length; i++) {
+	    				  reservedData[i] = Integer.valueOf((String) iter.next());
+	    			  }
+	    			  if (IntStream.of(reservedData).anyMatch(x -> x == index)) {
+	    				  topLabel.setText("이미 예약된 자리입니다.");
+				          add(topLabel,BorderLayout.CENTER);
+		        		  setSize(250, 100);
+	    			  } else {
+	    				  topLabel.setText(number+" 번 좌석을 예약하시겠습니까?");
+				          yesbtn = new JButton("네");
+				          yesbtn.addActionListener(this);
+				          noBtn = new JButton("아니오");
+				          noBtn.addActionListener(this);
+				          add(topLabel,BorderLayout.NORTH);
+				          add(yesbtn,BorderLayout.WEST);
+				          add(noBtn,BorderLayout.EAST);
+	    			  }
 	        	  }
 	          } else if (btn[index].getStatus() == 1) {
 	        	  topLabel.setText(number+" 번 좌석을 예약 취소하시겠습니까?");

@@ -21,7 +21,6 @@ public class LoggedInPanel extends JPanel{
 	int boxCount;
 	JButton[] reserveBtn;
 	JPanel btnPanel = new JPanel();
-	JTextArea reserve = new JTextArea();
 	JScrollPane scroll = new JScrollPane(btnPanel,
 										 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 										 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -69,7 +68,27 @@ public class LoggedInPanel extends JPanel{
 					System.out.println(btnText);
 
 				}
-			} else {				
+			} else {
+				if (!roomsData.getJSONObject(i).isNull("acceptDate")) {
+					String datestr = roomsData.getJSONObject(i).getString("acceptDate");
+					try {
+					    // 타임존이 포함된 ISO 8601 문자열로부터 Asia/Seoul 타임존의 LocaDateTime 오브젝트 획득
+					    LocalDateTime dateTime = LocalDateTime.from(
+
+					        Instant.from(
+					            DateTimeFormatter.ISO_DATE_TIME.parse(datestr)
+					        ).atZone(ZoneId.of("Asia/Seoul"))
+					    );
+					    datestr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
+					// 파씽 오류시 DateTimeParseException 예외 발생
+					} catch (DateTimeParseException ex) {
+						ex.printStackTrace();
+					    // 예외 처리 로직 작성
+					}
+					btnText += "<br>" + "예약시작일: " + datestr;
+					System.out.println(btnText);
+
+				}
 				reserveBtn[i].setBackground(Color.gray.brighter());
 			}
 			reserveBtn[i].setText(btnText);
@@ -79,10 +98,6 @@ public class LoggedInPanel extends JPanel{
 			btnPanel.add(reserveBtn[i]);
 			scroll.setBorder(null);
 			add(scroll);
-		
-			
-			reserve.setBounds(615,54,160,400);
-			reserve.setBackground(Color.gray.brighter());
 		}
 	}
 	
