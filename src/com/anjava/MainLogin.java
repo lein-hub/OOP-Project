@@ -36,7 +36,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JPasswordField PASSWORD;;
 	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom, refresh ,sprefresh;
 	LoggedInPanel loggedInPanel;
-	FakeDB fake = new FakeDB();
 	Font Title = new Font(null);
 	ImageIcon icon;
 	HttpCaller hc = new HttpCaller();
