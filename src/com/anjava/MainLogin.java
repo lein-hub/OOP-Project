@@ -33,7 +33,7 @@ import org.json.JSONObject;
 
 public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JPanel logInPanel, signUpBtnPanel, imagePanel, signUpMainPanel, cRoomPanel;
-	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel, colLabel, rowLabel, colBlankLabel, rowBlankLabel, roomNumLabel, logTypingLabel, roomPanelLabel;
+	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel, colLabel, rowLabel, colBlankLabel, rowBlankLabel, roomNumLabel, logTypingLabel, roomPanelLabel, roomHintLabel, selectHintLabel;
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum, roomNumField, colField, rowField, colBlankField, rowBlankField;
 	JPasswordField PASSWORD;;
@@ -96,7 +96,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		 // 회원가입
 
-		
+		 roomHintLabel = new AntialiasedLabel("");
+	      roomHintLabel.setIcon(new ImageIcon
+	            (MainLogin.class.getResource("/image/RoomHintLabel.jpg")));
+	      roomHintLabel.setLayout(null);
+	      roomHintLabel.setBounds(0,469,330,22);
 		
 		//----------------------------------------------------------------------------------------------
 		
@@ -159,10 +163,13 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				refresh.setVisible(true);
 				deleteSeats();
 				addAdminBtn();
+				add(roomHintLabel);
 				
 				mainBtn.setVisible(false);
+				roomPanelLabel.setVisible(false);
 				currentRoomNumber=0;
 				refreshLoggedInPanel();
+				remove(selectHintLabel);
 			}
 		});
 		
@@ -207,7 +214,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				new GrantAdmin();
 			}
 			
@@ -401,6 +407,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
         		public void actionPerformed(ActionEvent e) {
         			JSONObject roomData = new JSONObject(hc.getOneRoom(currentRoomNumber)).getJSONObject("data").getJSONObject("roomData");
         			new UpdateRoom(currentRoomNumber, roomData);
+        			
         		}
 	        });
 	        
@@ -618,6 +625,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			add(dRoom);
 			add(aBtn);
 		}
+		add(roomHintLabel);
 		roomPanelLabel = new AntialiasedLabel("");
 		roomPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/room.jpg")));
 		roomPanelLabel.setBounds(0, 0, 800, 500);
@@ -1695,6 +1703,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //		seatsPanel.setVisible(true);
 		seatsPanel.setBounds(10, 50, 800, 400);
 		seatsPanel.setBackground(Color.white);
+		
+		
+	    selectHintLabel = new AntialiasedLabel("");
+	    selectHintLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/SelectHintLabel.jpg")));
+	    selectHintLabel.setLayout(null);
+	    selectHintLabel.setBounds(0,468,350,22);
+	    add(selectHintLabel);
+	    remove(roomHintLabel);
 		remove(roomPanelLabel);
 		add(seatsPanel);
 		add(roomPanelLabel);
