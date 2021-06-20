@@ -285,7 +285,6 @@ public class HttpCaller {
 	 */
 	public String postCreateRoom(int roomNum, int col, int row, int[] colBlank, int[] rowBlank) {  // 방을 생성하는 요청
 		JSONObject jo = new JSONObject();
-		
 		jo.put("roomNum", roomNum);
 		jo.put("column", col);
 		jo.put("row", row);
@@ -293,6 +292,39 @@ public class HttpCaller {
 		jo.put("rowBlankLine", rowBlank);
 		if (colBlank != null)
 		jo.put("columnBlankLine", colBlank);
+		System.out.println(jo.toString());
+		return this.request("POST", url+"room/", jo.toString());
+	}
+	
+	public String postCreateRoom(RoomCreator rc) {  // 방을 생성하는 요청
+		JSONObject jo = new JSONObject();
+		
+		jo.put("roomNum", rc.getRoomNum());
+
+		if (rc.getCol() != 99)
+		jo.put("column", rc.getCol());
+		if (rc.getRow() != 99)
+		jo.put("row", rc.getRow());
+		if (rc.getRowBlank() != null)
+			jo.put("rowBlankLine", rc.getRowBlank());
+		if (rc.getColBlank() != null)
+			jo.put("columnBlankLine", rc.getColBlank());
+		if (rc.getResetDate() != null)
+			jo.put("resetDate", rc.getResetDate());
+		if (rc.getAcceptDate() != null)
+			jo.put("acceptDate", rc.getAcceptDate());
+		if (rc.getMeasure() == 0) {
+			jo.put("measure", rc.getMeasure());
+			jo.put("weekendInterval", rc.getWeekendInterval());
+			jo.put("openDeffer", rc.getOpenDeffer());
+		}
+		if (rc.getMeasure() == 1) {
+			jo.put("measure", rc.getMeasure());
+			jo.put("day", rc.getDay());
+			jo.put("weekNth", rc.getWeekNth());
+			jo.put("openDeffer", rc.getOpenDeffer());
+		}
+		
 		System.out.println(jo.toString());
 		return this.request("POST", url+"room/", jo.toString());
 	}
@@ -352,6 +384,52 @@ public class HttpCaller {
 		
 		return this.request("POST", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
+	
+	public String patchResetRoomIntervalWeek(int roomNum, int weekendInterval, int openDeffer) {  // 특정 방의 예약이 가능해지는 시간을 설정하는 요청
+		JSONObject jo = new JSONObject();
+		jo.put("measure", 0);
+		jo.put("weekendInterval", weekendInterval);
+		jo.put("openDeffer", openDeffer);
+		return this.request("PATCH", url+"room/"+roomNum, jo.toString());
+	}
+	
+	public String patchOneRoom(RoomCreator rc) {
+		JSONObject jo = new JSONObject();
+		if (rc.getCol() != 99)
+			jo.put("column", rc.getCol());
+		if (rc.getRow() != 99)
+			jo.put("row", rc.getRow());
+		if (rc.getRowBlank() != null)
+			jo.put("rowBlankLine", rc.getRowBlank());
+		if (rc.getColBlank() != null)
+			jo.put("columnBlankLine", rc.getColBlank());
+		if (rc.getResetDate() != null)
+			jo.put("resetDate", rc.getResetDate());
+		if (rc.getAcceptDate() != null)
+			jo.put("acceptDate", rc.getAcceptDate());
+		if (rc.getMeasure() == 0) {
+			jo.put("measure", rc.getMeasure());
+			jo.put("weekendInterval", rc.getWeekendInterval());
+			jo.put("openDeffer", rc.getOpenDeffer());
+		}
+		if (rc.getMeasure() == 1) {
+			jo.put("measure", rc.getMeasure());
+			jo.put("day", rc.getDay());
+			jo.put("weekNth", rc.getWeekNth());
+			jo.put("openDeffer", rc.getOpenDeffer());
+		}
+
+		return this.request("PATCH", url+"room/"+rc.getRoomNum(), jo.toString());
+	}
+	
+	public String patchResetRoomIntervalDay(int roomNum, int day, int weekNth, int openDeffer) {  // 특정 방의 예약이 가능해지는 시간을 설정하는 요청
+		JSONObject jo = new JSONObject();
+		jo.put("measure", 1);
+		jo.put("day", day);
+		jo.put("weekNth", weekNth);
+		jo.put("openDeffer", openDeffer);
+		return this.request("PATCH", url+"room/"+roomNum, jo.toString());
+	}
 	/**
 	 * roomNum방에 acceptDate를 등록하거나 갱신합니다.<br>
 	 * acceptDate없이 보내면 acceptDate가 삭제됩니다.<br>
@@ -387,6 +465,18 @@ public class HttpCaller {
 		System.out.println(jo.toString());
 		
 		return this.request("PATCH", url+"room/"+roomNum+"/reset", jo.toString());
+	}
+	
+	public String patchAcceptDateAfterResetRoom(int roomNum, Date resetDate, Date ADAR) {  // 특정 방의 자리가 리셋되는 시간을 설정하는 요청
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		JSONObject jo = new JSONObject();
+		
+		if (resetDate != null)
+		jo.put("resetDate", df.format(resetDate));
+		jo.put("acceptDateAfterReset", df.format(ADAR));
+		System.out.println(jo.toString());
+		
+		return this.request("PATCH", url+"room/"+roomNum, jo.toString());
 	}
 	/**
 	 * 현재 사용자의 roomNum방의 특정 좌석에 대한 예약을 취소합니다.

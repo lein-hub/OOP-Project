@@ -16,24 +16,22 @@ import org.json.JSONObject;
 public class TestField {
 	
 	public static void main(String[] args) {
-		int[] fst = {3};
-		int[] scd = {2,4};
-		char[] pw = {'1','2','3','4','1','2','3','4'};
-		HttpCaller hc = new HttpCaller();
-		System.out.println(hc.postLogIn("test6", pw));
-		System.out.println(Arrays.toString(fst));
-		Date resetDate = new Date();
-		JSONObject roomsData = new JSONObject(hc.getAllRoom());
-//		System.out.println(hc.postCreateRoom(202, 6, 8));
-//		System.out.println(hc.postCreateRoom(203, 6, 8, fst, null));
-//		System.out.println(hc.postCreateRoom(204, 6, 8, null, scd));
-//		System.out.println(hc.postCreateRoom(205, 6, 8, fst, scd));
-		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).isNull("resetDate"));
-		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
-//		System.out.println(roomsData.getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
+//		int[] fst = {3};
+//		int[] scd = {2,4};
+//		char[] pw = {'1','2','3','4','1','2','3','4'};
+//		HttpCaller hc = new HttpCaller();
+//		System.out.println(hc.postLogIn("test6", pw));
+//		System.out.println(Arrays.toString(fst));
+//		Date resetDate = new Date();
+//		JSONObject roomsData = new JSONObject(hc.getAllRoom());
+//		
+//		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).isNull("resetDate"));
+//		System.out.println(roomsData.getJSONObject("data").getJSONArray("roomsData").getJSONObject(0).getString("resetDate"));
+//		Date date = new Date(122, 7, 20, 13, 0);
 		
-		Date date = new Date(122, 7, 20, 13, 0);
-		System.out.println(hc.patchResetDateRoom(55, date));
+		int a;
+		
+		
 	}
 
 }

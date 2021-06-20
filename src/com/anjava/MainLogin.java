@@ -14,6 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import org.jdesktop.swingx.JXDatePicker;
+
 import javax.swing.*;
 
 import org.json.JSONArray;
@@ -28,7 +34,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum;
 	JPasswordField PASSWORD;;
-	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom, refresh;
+	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom, refresh ,sprefresh;
 	LoggedInPanel loggedInPanel;
 	FakeDB fake = new FakeDB();
 	Font Title = new Font(null);
@@ -39,6 +45,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JLabel[] logInLabels = new JLabel[signUpPanel.categories.length];
 	JPanel seatsPanel;
 	JSONArray roomsData;
+	int currentRoomNumber;
 
 
 	public MainLogin(){
@@ -127,9 +134,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				refreshLoggedInPanel();
+				sprefresh.setVisible(false);
 				refresh.setVisible(true);
 				deleteSeats();
 				mainBtn.setVisible(false);
+				currentRoomNumber=0;
 			}
 		});
 		
@@ -208,7 +217,26 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      });
 	      refresh.setVisible(false);
 	      add(refresh);
-		
+	      
+	      
+	      
+	      //sprefresh button
+	      
+	      sprefresh=new JButton("새로고침");
+	      sprefresh.setBounds(500,464,84,25);
+	      sprefresh.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				seatsPanel.setVisible(false);
+				addSeats(currentRoomNumber);
+			}
+	    	  
+	      });
+	      
+	      sprefresh.setVisible(false);
+	      add(sprefresh);
 		 //LogOutButton
 		logOutBtn = new JButton("로그아웃");
 		logOutBtn.setVisible(true);
@@ -225,6 +253,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				if(cRoomPanel != null)
 				cRoomPanel.setVisible(false);
 				refresh.setVisible(false);
+				
 			}
 			
 		});
@@ -288,6 +317,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //										remove(loggedInPanel);
 //										deleteLoggedInPanel();
 						loggedInPanel.setVisible(false);
+						refresh.setVisible(false);
+						sprefresh.setVisible(true);
 						addSeats(roomNum);
 						deleteAdminBtn();
 						
@@ -333,6 +364,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				deleteMainLogIn();
 				setLogInTextEmpty();
 				refresh.setVisible(true);
+				sprefresh.setVisible(false);
 				//로그인 했을 때 생기는 Buttons
 				
 				for(int i = 0; i < loggedInPanel.boxCount; i++) {
@@ -349,6 +381,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 								deleteAdminBtn();
 								refresh.setVisible(false);
 								mainBtn.setVisible(true);
+								sprefresh.setVisible(true);
+								currentRoomNumber=roomNum;
 							}
 						});
 					} else {
@@ -655,30 +689,37 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      JButton reset;
 	      JButton realReset;
 	      JTextField[] fields;
+	      JXDatePicker picker;
+	      JPanel panel;
 //	      String[] fieldsName = {"roomNum", "year", "month", "date", "hour", "minute"};
 	      
 	      JLabel[] labels;
 	      String[] labelsName = {"강의실 호수", "년", "월", "일", "시간","분"};
 	      
 	      public ResetDate(){
+	    	  picker = new JXDatePicker();
+	    	  panel = new JPanel();
+	    	  picker.setDate(Calendar.getInstance().getTime());
+	          picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
+	          panel.add(picker);
 	         fields = new JTextField[labelsName.length];
 	         labels = new JLabel[labelsName.length];
 	          setSize(440,300);
 	          int a=0;
 	          int b=0;
-	          for(int i = 0; i < labelsName.length; i++) {
-	             fields[i] = new JTextField();
-	             fields[i].setBounds(110, 15+a, 120, 25);
-	             
-	             labels[i] = new JLabel(labelsName[i]);
-	             labels[i].setBounds(30+b, 15+a, 100, 25);
-	             b = 50;
-	             if(i == 4) labels[i].setBounds(70, 155, 100, 25); 
-	             a = a+35;
-	             fields[i].setToolTipText("숫자로만 입력하세요.");
-	             add(fields[i]);
-	             add(labels[i]);
-	          }
+//	          for(int i = 0; i < labelsName.length; i++) {
+//	             fields[i] = new JTextField();
+//	             fields[i].setBounds(110, 15+a, 120, 25);
+//	             
+//	             labels[i] = new JLabel(labelsName[i]);
+//	             labels[i].setBounds(30+b, 15+a, 100, 25);
+//	             b = 50;
+//	             if(i == 4) labels[i].setBounds(70, 155, 100, 25); 
+//	             a = a+35;
+//	             fields[i].setToolTipText("숫자로만 입력하세요.");
+//	             add(fields[i]);
+//	             add(labels[i]);
+//	          }
 	            
 	            reset = new JButton("초기화 날짜 설정");
 	            reset.setBounds(270,235,130,20);
@@ -694,7 +735,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 					}
 	            	
 	            });
-	            
+	            add(panel);
 	            add(reset);
 	            add(realReset);
 	            setLayout(null);
