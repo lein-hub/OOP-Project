@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import javax.swing.JButton;
@@ -62,15 +63,19 @@ class SeatsPanel extends JPanel {
 	      this.maxseat = this.column * this.row;
 	      this.isAdmin = hc.isAdmin();
 	      this.otherReservedSeats = otherReservedSeats;
-	      JSONArray reservedRooms = new JSONObject(hc.getUserDetail()).getJSONObject("data").getJSONArray("reservedRooms");
-	      for (int i=0; i<reservedRooms.length(); i++) {
-	    	  JSONObject obj = (JSONObject) reservedRooms.get(i);
-	    	  if (!obj.isNull("roomNum")) {
-	    		  if (obj.getInt("roomNum") == roomNum) {
-	    			  myReservedSeat = obj.getInt("sitNum");
-	    		  }
+	      JSONObject reservedRooms = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData").getJSONObject("reservedData");
+	      Set<String> set = reservedRooms.keySet();
+	      Iterator<String> iter = set.iterator();
+	      while (iter.hasNext()) {
+	    	  String id = iter.next();
+	    	  
+	    	  if (reservedRooms.get(id).equals(hc.getId())) {
+	    		  myReservedSeat = Integer.valueOf(id);
+	    		  break;
 	    	  }
+	    	  myReservedSeat = 0;
 	      }
+	      
 	      btn = new MyButton[maxseat];
 	      
 	      for (int i = 0; i < rowblock.length; i++) {
@@ -163,6 +168,7 @@ class SeatsPanel extends JPanel {
 	      int index;
 	      int roomNum;
 	      int number;
+	      JSONObject roomData;
 	      public yeyakok(int index, int number, int roomNum) {
 	    	  this.index = index;
 	    	  this.roomNum = roomNum;
@@ -171,6 +177,7 @@ class SeatsPanel extends JPanel {
 	    	  setSize(300,120);
 	          setLocationRelativeTo(null);
 	          topLabel = new JLabel();
+	          roomData = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData");
 	          
 	          if (btn[index].getStatus() == 0) {
 //	        	  setLayout(new BorderLayout());
@@ -189,7 +196,7 @@ class SeatsPanel extends JPanel {
 			          this.add(noBtn);
 			          this.setUndecorated(true);
 	        	  } else {
-	        		  JSONObject rsvd = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData").getJSONObject("reservedData");
+	        		  JSONObject rsvd = roomData.getJSONObject("reservedData");
 	    			  int[] reservedData = new int[rsvd.length()];
 	    			  Iterator<String> iter = rsvd.keys();
 	    			  for (int i=0; i<reservedData.length; i++) {
@@ -254,7 +261,7 @@ class SeatsPanel extends JPanel {
 	          } else {
 	        	  if (isAdmin) {
 	        		  topLabel.setText(number+" 번 좌석을 예약 취소하시겠습니까?");
-		        	  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		        	  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 11));
 		        	  
 			          yesbtn = new JButton("네");
 			          yesbtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
@@ -309,16 +316,18 @@ class SeatsPanel extends JPanel {
 			          myReservedSeat = this.number;
 			          new ok("예약이 완료되었습니다.");
 	    		  } else if (btn[index].getStatus() == 1) {
-//	    			  btn[index].addMouseListener(this);
 			          btn[index].setBackground(new Color(255,170,170));
-			          hc.deleteReserveRoom(this.roomNum, this.number);
+			          System.out.println(hc.deleteReserveRoom(this.roomNum, this.number));
 			          btn[index].setStatus(0);
 			          myReservedSeat = 0;
 			          new ok("예약이 취소되었습니다.");
 	    		  } else {
 	    			  if (isAdmin) {
 				          btn[index].setBackground(new Color(255,170,170));
-				          hc.deleteReserveRoom(this.roomNum, this.number);
+				          System.out.println(this.roomData.getJSONObject("reservedData").getString(String.valueOf(this.number)));
+				          System.out.println(roomNum);
+				          System.out.println(this.number);
+				          System.out.println(hc.deleteReserveRoom(this.roomData.getJSONObject("reservedData").getString(String.valueOf(this.number)), this.roomNum, this.number));
 				          btn[index].setStatus(0);
 				          new ok("예약이 취소되었습니다.");
 	    			  }

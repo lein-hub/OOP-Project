@@ -301,7 +301,10 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				cRoomPanel.setVisible(false);
 				refresh.setVisible(false);
 				addMainLogIn();
-				remove(roomPanelLabel);
+				editBtn.setVisible(false);
+				sprefresh.setVisible(false);
+				roomPanelLabel.setVisible(false);
+				//				remove(roomPanelLabel);
 				
 			}
 			
@@ -439,7 +442,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		//메인 화면에서 회원가입 버튼 눌렀을 때
 		if(e.getSource()==signUpBtn) {
 			
-			
+			sprefresh.setVisible(false);
+			if(editBtn!=null)
+			editBtn.setVisible(false);
+			if(selectHintLabel!=null)
+			selectHintLabel.setVisible(false);
 			signUpBtnPanel = new JPanel();
 			signUpPanelLabel = new AntialiasedLabel("");
 			signUpPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/signup.jpg")));

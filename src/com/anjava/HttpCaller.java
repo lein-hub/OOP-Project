@@ -36,7 +36,7 @@ public class HttpCaller {
 	
 	private String request(String type, String requestURL, String jsonMessage) {
 		try{
-			OkHttpClient client = new OkHttpClient();  // OkHttpClient 객체를 생성합니다.
+			OkHttpClient client = new OkHttpClient();  // OkHttpClient 객체를 생성합니다.+
 			
 			Request request;  // 요청 객체를 선언합니다.
 			switch (type) {  // 인자로 받은 type 변수의 값에 따라 get, post, delete, patch의 형식별로 요청 객체를 정의합니다.
@@ -51,7 +51,7 @@ public class HttpCaller {
 				request = new Request.Builder()
 				.addHeader("Authorization", token)
 				.url(requestURL)
-				.delete() //DELETE로 요청합니다.
+				.delete(RequestBody.create(jsonMessage, MediaType.parse("application/json; charset=utf-8"))) //DELETE로 요청합니다.
 				.build();
 				break;
 			case "PATCH":
@@ -514,7 +514,9 @@ public class HttpCaller {
 		
 		jo.put("userId", userId);
 		jo.put("sitNum", sitNum);
-		
+		System.out.println(isAdmin);
+		System.out.println(token);
+		System.out.println(jo.toString());
 		return this.request("DELETE", url+"room/"+roomNum+"/reserve", jo.toString());
 	}
 	/**
