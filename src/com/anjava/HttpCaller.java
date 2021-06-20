@@ -526,7 +526,7 @@ public class HttpCaller {
 	 * @return 요청 결과 메시지가 반환됩니다.
 	 */
 	public String deleteReserveRoom(int roomNum) {  // 특정 방에 대해서 현재 사용자의 예약을 취소하는 요청
-		return this.request("DELETE", url+"room/"+roomNum+"/reserve", null);
+		return this.request("DELETE", url+"room/"+roomNum+"/reserve", "");
 	}
 	/**
 	 * 방을 삭제하면서, 이 방과 관련된 유저들의 예약들도 삭제 됩니다.<br>
@@ -536,7 +536,7 @@ public class HttpCaller {
 	 */
 	public String deleteRoom(int roomNum) {
 		
-		return this.request("DELETE", url+"room/"+roomNum, null);
+		return this.request("DELETE", url+"room/"+roomNum, "");
 	}
 	
 	

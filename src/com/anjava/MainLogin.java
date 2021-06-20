@@ -37,7 +37,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum, roomNumField, colField, rowField, colBlankField, rowBlankField;
 	JPasswordField PASSWORD;;
-	JButton aBtn, logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, makeRoomBtn, dBtn,editBtn, refresh ,sprefresh;
+	JButton aBtn, logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, makeRoomBtn, dBtn,editBtn, refresh ,sprefresh, outBtn;
 	LoggedInPanel loggedInPanel;
 	Font Title = new Font(null);
 	ImageIcon icon;
@@ -80,6 +80,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		 //Password Label
 		pwdLabel = new JLabel("");
 		pwdLabel.setBounds(38,45,135,20);
+		
+		//SelectHint Label
+		selectHintLabel = new AntialiasedLabel("");
+	    selectHintLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/SelectHintLabel.jpg")));
+	    selectHintLabel.setLayout(null);
+	    selectHintLabel.setBounds(0,468,350,22);
+	    selectHintLabel.setVisible(false);
+	    add(selectHintLabel);
 		
 		 //welcome Label
 		welcome = new JLabel();
@@ -304,6 +312,13 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				editBtn.setVisible(false);
 				sprefresh.setVisible(false);
 				roomPanelLabel.setVisible(false);
+				if(selectHintLabel!=null)
+					selectHintLabel.setVisible(false);
+					if(roomHintLabel!=null)
+						roomHintLabel.setVisible(false);
+					sprefresh.setVisible(false);
+					if(editBtn!=null)
+					editBtn.setVisible(false);
 				//				remove(roomPanelLabel);
 				
 			}
@@ -441,12 +456,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		//메인 화면에서 회원가입 버튼 눌렀을 때
 		if(e.getSource()==signUpBtn) {
-			
+			if(selectHintLabel!=null)
+			selectHintLabel.setVisible(false);
+			if(roomHintLabel!=null)
+				roomHintLabel.setVisible(false);
 			sprefresh.setVisible(false);
 			if(editBtn!=null)
 			editBtn.setVisible(false);
-			if(selectHintLabel!=null)
-			selectHintLabel.setVisible(false);
+			
 			signUpBtnPanel = new JPanel();
 			signUpPanelLabel = new AntialiasedLabel("");
 			signUpPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/signup.jpg")));
@@ -684,6 +701,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	       
 	       
 	      public CreateRoom() {
+	      setResizable(false);
 	      setTitle("강의실 예약하기");
 	      setSize(900,450);
 	      setLayout(null);
@@ -1570,90 +1588,135 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	   }
 	
 	class DeleteRoom extends JFrame implements ActionListener{
-	      
-	      public DeleteRoom() {
-	         setSize(320, 150);
-	         
-	         JLabel number = new JLabel("강의실 호수");
-	         number.setBounds(30,30,100,25);
-	         
-	         deleteNum = new JTextField();
-	         deleteNum.setToolTipText("숫자로만 입력하세요.");
-	         deleteNum.setBounds(100,30,120,25);
-	         
-	         dBtn = new JButton("방 지우기");
-	         dBtn.setBounds(150,70,89,20);
-	         dBtn.addActionListener(this);
-	         
-	         
-	         add(number);
-	         add(deleteNum);
-	         add(dBtn);
-	         setLayout(null);
-	         setLocationRelativeTo(null);
-	         setVisible(true);
-	      }
-	      
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	         System.out.println(deleteNum.getText());
-	         if(deleteNum.getText().equals("")) {
-	            JOptionPane.showMessageDialog(null, "호수를 입력하세요.", "빈 내용", JOptionPane.WARNING_MESSAGE);
-	         }else {
-	            hc.deleteRoom(Integer.valueOf(deleteNum.getText()));
-	            JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
-//	            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    		loggedInPanel.setVisible(false);
-	            refreshLoggedInPanel();
-	            dispose();
-	         }
-	         
-	      }
-	      
-	   }
-	
-	class GrantAdmin extends JFrame implements ActionListener{
-	      
-	      public GrantAdmin() {
-	         setSize(320, 150);
-	         
-	         JLabel number = new JLabel("userId");
-	         number.setBounds(30,30,100,25);
-	         
-	         deleteNum = new JTextField();
-	         deleteNum.setToolTipText("관리자 권한을 부여할 유저 ID를 입력하세요.");
-	         deleteNum.setBounds(100,30,120,25);
-	         
-	         dBtn = new JButton("권한 부여");
-	         dBtn.setBounds(150,70,89,20);
-	         dBtn.addActionListener(this);
-	         
-	         
-	         add(number);
-	         add(deleteNum);
-	         add(dBtn);
-	         setLayout(null);
-	         setLocationRelativeTo(null);
-	         setVisible(true);
-	      }
-	      
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	         System.out.println(deleteNum.getText());
-	         if(deleteNum.getText().equals("")) {
-	            JOptionPane.showMessageDialog(null, "아이디를 입력하세요", "빈 내용", JOptionPane.WARNING_MESSAGE);
-	         }else {
-	            System.out.println(hc.patchGrantAdmin(deleteNum.getText()));
-	            JOptionPane.showMessageDialog(null, "해당 유저에게 권한이 부여되었습니다.", "완료", JOptionPane.PLAIN_MESSAGE);
-//	            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    		loggedInPanel.setVisible(false);
-	            refreshLoggedInPanel();
-	            dispose();
-	         }
-	         
-	      }
-	      
-	   }
+        
+        public DeleteRoom() {
+           setSize(320, 150);
+           
+           JLabel number = new JLabel("강의실 호수");
+           number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           number.setBounds(30,50,100,25);
+           
+           deleteNum = new JTextField();
+           deleteNum.setToolTipText("숫자로만 입력하세요.");
+           deleteNum.setBounds(100,50,190,25);
+           
+           dBtn = new JButton("방 지우기");
+           dBtn.setBounds(40,100,100,20);
+           dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           dBtn.setForeground(Color.BLACK);
+           dBtn.setBackground(Color.LIGHT_GRAY);
+           dBtn.addActionListener(this);
+           dBtn.setBorderPainted(false);
+           
+           outBtn = new JButton("취소");
+           outBtn.setBounds(180,100,100,20);
+           outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           outBtn.setForeground(Color.BLACK);
+           outBtn.setBackground(Color.LIGHT_GRAY);
+           outBtn.addActionListener(this);
+           outBtn.setBorderPainted(false);
+           
+           
+           add(number);
+           add(deleteNum);
+           add(dBtn);
+           add(outBtn);
+           setLayout(null);
+           setLocationRelativeTo(null);
+           setUndecorated(true);
+           setVisible(true);
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+           System.out.println(deleteNum.getText());
+           if (e.getSource() == outBtn) {
+              dispose();
+           }
+           if (e.getSource() ==dBtn) {
+              if(deleteNum.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "호수를 입력하세요.", "빈 내용", JOptionPane.WARNING_MESSAGE);
+                 }else {
+                    hc.deleteRoom(Integer.valueOf(deleteNum.getText()));
+                    JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
+//                    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                  loggedInPanel.setVisible(false);
+                    refreshLoggedInPanel();
+                    dispose();
+                 } 
+           }
+
+           
+        }
+        
+     }
+  
+  class GrantAdmin extends JFrame implements ActionListener{
+        
+        public GrantAdmin() {
+           setSize(320, 150);
+           
+           JLabel number = new JLabel("User ID");
+           number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           number.setBounds(30,50,100,25);
+           
+           deleteNum = new JTextField();
+           deleteNum.setToolTipText("관리자 권한을 부여할 유저 ID를 입력하세요.");
+        
+           deleteNum.setBounds(100,50,190,25);
+           
+           dBtn = new JButton("권한부여");
+           dBtn.setBounds(40,100,100,20);
+           dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           dBtn.setForeground(Color.BLACK);
+           dBtn.setBackground(Color.LIGHT_GRAY);
+           dBtn.addActionListener(this);
+           dBtn.setBorderPainted(false);
+           
+           outBtn = new JButton("취소");
+           outBtn.setBounds(180,100,100,20);
+           outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+           outBtn.setForeground(Color.BLACK);
+           outBtn.setBackground(Color.LIGHT_GRAY);
+           outBtn.addActionListener(this);
+           outBtn.setBorderPainted(false);
+           
+           add(number);
+           add(deleteNum);
+           add(dBtn);
+           add(outBtn);
+           setLayout(null);
+           setLocationRelativeTo(null);
+           setUndecorated(true);
+           setVisible(true);
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+           System.out.println(deleteNum.getText());
+           if (e.getSource() == outBtn) {
+              dispose();
+           }
+           if (e.getSource() == dBtn) {
+              if(deleteNum.getText().equals("")) {
+                    JOptionPane.showMessageDialog(null, "아이디를 입력하세요", "빈 내용", JOptionPane.WARNING_MESSAGE);
+                 }else {
+                    System.out.println(hc.patchGrantAdmin(deleteNum.getText()));
+                    JOptionPane.showMessageDialog(null, "해당 유저에게 권한이 부여되었습니다.", "완료", JOptionPane.PLAIN_MESSAGE);
+//                    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                  loggedInPanel.setVisible(false);
+                    refreshLoggedInPanel();
+                    dispose();
+                 }
+
+           }
+
+           
+        }
+        
+     }
+  
+  
 	
 	
 	public void deleteLoggedInPanel() {
@@ -1712,11 +1775,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		seatsPanel.setBackground(Color.white);
 		
 		
-	    selectHintLabel = new AntialiasedLabel("");
-	    selectHintLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/SelectHintLabel.jpg")));
-	    selectHintLabel.setLayout(null);
-	    selectHintLabel.setBounds(0,468,350,22);
-	    add(selectHintLabel);
+	    selectHintLabel.setVisible(true);
 	    remove(roomHintLabel);
 		remove(roomPanelLabel);
 		add(seatsPanel);
