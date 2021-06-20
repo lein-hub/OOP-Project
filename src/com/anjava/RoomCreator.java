@@ -3,7 +3,7 @@ package com.anjava;
 import java.util.Date;
 
 public class RoomCreator {
-	private int roomNum;
+	private int roomNum = 99999;
 	private int col = 99;
 	private int row = 99;
 	private int[] colBlank;
@@ -15,8 +15,15 @@ public class RoomCreator {
 	private int openDeffer;
 	private int day;
 	private int weekNth;
+	private boolean isShuffle = false;
 	
 	
+	public boolean isShuffle() {
+		return isShuffle;
+	}
+	public void setShuffle(boolean isShuffle) {
+		this.isShuffle = isShuffle;
+	}
 	public int getRoomNum() {
 		return roomNum;
 	}

@@ -324,7 +324,7 @@ public class HttpCaller {
 			jo.put("weekNth", rc.getWeekNth());
 			jo.put("openDeffer", rc.getOpenDeffer());
 		}
-		
+		jo.put("isShuffle", rc.isShuffle());
 		System.out.println(jo.toString());
 		return this.request("POST", url+"room/", jo.toString());
 	}
@@ -418,6 +418,7 @@ public class HttpCaller {
 			jo.put("weekNth", rc.getWeekNth());
 			jo.put("openDeffer", rc.getOpenDeffer());
 		}
+		jo.put("isShuffle", rc.isShuffle());
 
 		return this.request("PATCH", url+"room/"+rc.getRoomNum(), jo.toString());
 	}
