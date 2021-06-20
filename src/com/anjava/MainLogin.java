@@ -1,12 +1,14 @@
 package com.anjava;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -14,11 +16,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import org.jdesktop.swingx.JXDatePicker;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 
@@ -30,11 +33,11 @@ import org.json.JSONObject;
 
 public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JPanel logInPanel, signUpBtnPanel, imagePanel, signUpMainPanel, cRoomPanel;
-	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel, colLabel, rowLabel, colBlankLabel, rowBlankLabel, roomNumLabel;
+	JLabel mainTitle, subTitle, idLabel, pwdLabel, welcome, reLabel, colLabel, rowLabel, colBlankLabel, rowBlankLabel, roomNumLabel, logTypingLabel, roomPanelLabel;
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
-	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum;
+	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum, roomNumField, colField, rowField, colBlankField, rowBlankField;
 	JPasswordField PASSWORD;;
-	JButton logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, resetDate, makeRoomBtn, dBtn, aRoom, refresh ,sprefresh;
+	JButton aBtn, logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, makeRoomBtn, dBtn,editBtn, refresh ,sprefresh;
 	LoggedInPanel loggedInPanel;
 	Font Title = new Font(null);
 	ImageIcon icon;
@@ -44,14 +47,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JLabel[] logInLabels = new JLabel[signUpPanel.categories.length];
 	JPanel seatsPanel;
 	JSONArray roomsData;
-	int currentRoomNumber;
+	int currentRoomNumber, xDrag, yDrag, xPress, yPress;
 
 
 	public MainLogin(){
 		
 		//Panel
 		 //LogInPanel
-		icon = new ImageIcon();
+//		icon = new ImageIcon();
 		logInPanel = new JPanel();
 		imagePanel = new JPanel();
 		
@@ -71,22 +74,23 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		subTitle.setFont(new Font("여기어때 잘난체",Font.BOLD,20));
 		
 		 //ID Label
-		idLabel = new JLabel("ID");
+		idLabel = new JLabel("");
 		idLabel.setBounds(47,20,135,20);
 		
 		 //Password Label
-		pwdLabel = new JLabel("PW");
+		pwdLabel = new JLabel("");
 		pwdLabel.setBounds(38,45,135,20);
 		
 		 //welcome Label
 		welcome = new JLabel();
-		welcome.setBounds(5,-123,300,300);
-		welcome.setFont(new Font(null,Font.CENTER_BASELINE,30));
+		welcome.setBounds(10,-130,300,300);
+		welcome.setFont(new Font("HY견고딕", Font.PLAIN, 20));
+		welcome.setForeground(Color.white);
 		welcome.setVisible(false);
 		
 		 // 메인타이틀
 		mainLogLabel = new AntialiasedLabel("");
-		mainLogLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/mainlogin.jpg")));
+		mainLogLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/mainlogin2.jpg")));
 		mainLogLabel.setBounds(0, 0, 800, 500);
 //		BufferedImage image = new BufferedImage();
 		
@@ -101,50 +105,75 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		 //ID
 		ID = new JTextField(15);
-		ID.setBounds(64,20,135,20);
+		ID.setBorder(null);
+		ID.setBounds(70,40,250,40);
 		ID.addKeyListener(this);
 		ID.setText("test6");
+		ID.setFont(new Font("SAN SERIF", Font.PLAIN, 25));
+		ID.setForeground(new Color(125,124,130));
 
 		 //Password
 		PASSWORD = new JPasswordField(15);
-		PASSWORD.setBounds(64,45,135,20);
+		PASSWORD.setBorder(null);
+		PASSWORD.setBounds(70,108,250,40);
 		PASSWORD.addKeyListener(this);
 		PASSWORD.setText("12341234");
-
+		PASSWORD.setFont(new Font("SAN SERIF", Font.PLAIN, 25));
+		PASSWORD.setForeground(new Color(125,124,130));
+		
+		logTypingLabel = new AntialiasedLabel("");
+		logTypingLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/logTypingLabel.jpg")));
+		logTypingLabel.setBounds(0, 0, 300, 300);
 		
 		//----------------------------------------------------------------------------------------------
 		
 		
 		//Buttons
 		 //LogIn Button
-		logInBtn = new JButton("로그인");
-		logInBtn.setBounds(85, 75, 80, 25);
-		logInBtn.setBackground(Color.LIGHT_GRAY);
+		logInBtn = new JButton();
+		logInBtn.setText("로그인");
+		logInBtn.setBounds(160, 185, 100, 35);
+		logInBtn.setBackground(new Color(135,77,162));
+		logInBtn.setForeground(Color.white);
+		logInBtn.setFont(new Font("HY견고딕", Font.PLAIN, 14));
 		logInBtn.addActionListener(this);
+		logInBtn.setBorderPainted(false);
 		
 		//main Button
-		mainBtn = new JButton("뒤로가기");
-		mainBtn.setBounds(598, 464, 84, 25);
+		mainBtn = new JButton("");
+		mainBtn.setText("뒤로가기");
+		mainBtn.setBounds(600, 468, 84, 25);
+		mainBtn.setBackground(new Color(135,77,162));
+		mainBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		mainBtn.setForeground(Color.white);
+		mainBtn.setBorderPainted(false);
 		
 		
 		
 		mainBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				refreshLoggedInPanel();
+				
+				editBtn.setVisible(false);
 				sprefresh.setVisible(false);
 				refresh.setVisible(true);
 				deleteSeats();
+				addAdminBtn();
+				
 				mainBtn.setVisible(false);
 				currentRoomNumber=0;
+				refreshLoggedInPanel();
 			}
 		});
 		
 		
 		//create Room Button
 		cRoom = new JButton("방만들기");
-		cRoom.setBounds(622,58,160,70);
+		cRoom.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		cRoom.setForeground(new Color(135,77,162));
+		cRoom.setBackground(Color.white);
+		cRoom.setBounds(505,7,90,25);
+		cRoom.setBorderPainted(false);
 		cRoom.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -155,46 +184,48 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		//delete Room Button
 		dRoom = new JButton("방지우기");
-		dRoom.setBounds(622,148,160,70);
+		dRoom.setBorderPainted(false);
+		dRoom.setBounds(620,7,90,25);
+		dRoom.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		dRoom.setForeground(new Color(135,77,162));
+		dRoom.setBackground(Color.white);
 		dRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               // TODO Auto-generated method stub
                new DeleteRoom();
             }
          });
 		
-		//reset Date Button
-		resetDate = new JButton("초기화날짜설정");
-		resetDate.setBounds(622,238,160,70);
-		resetDate.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               // TODO Auto-generated method stub
-               new ResetDate();
-            }
-         });
-		
-		//accept Date Button
-		aRoom = new JButton("예약시작날짜설정");
-		aRoom.setBounds(622,328,160,70);
-		aRoom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               // TODO Auto-generated method stub
-               new AcceptDate();
-            }
-         });
+		//admin button
+		aBtn = new JButton("관리자 권한 부여");
+		aBtn.setBorderPainted(false);
+		aBtn.setBounds(350,7,130,25);
+		aBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		aBtn.setForeground(new Color(135,77,162));
+		aBtn.setBackground(Color.white);
+		aBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new GrantAdmin();
+			}
+			
+		});
 		
 		 //SignUp Button
 		signUpBtn = new JButton("회원가입");
-		signUpBtn.setBounds(80, 110, 90, 25);
-		signUpBtn.setBackground(Color.PINK);
+		signUpBtn.setBounds(50, 185, 100, 35);
+		signUpBtn.setBackground(Color.LIGHT_GRAY);
+		signUpBtn.setFont(new Font("HY견고딕", Font.PLAIN, 14));
+		signUpBtn.setBorderPainted(false); // 버튼 테두리 없애기
 		signUpBtn.addActionListener(this);
 		
 		 //Exit Button
 		exitButton = new JButton("");
 		exitButton.setBounds(770, 10, 20, 20);
+		exitButton.setBackground(new Color(255,130,130));
+		exitButton.setBorderPainted(false);
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
@@ -203,13 +234,16 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		//refresh button
 	      refresh = new JButton("새로고침");
-	      refresh.setBounds(500, 464, 84, 25);
+	      refresh.setBounds(500, 468, 84, 25);
+	      refresh.setForeground(Color.white);
+	      refresh.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	      refresh.setBackground(new Color(135,77,162));
+	      refresh.setBorderPainted(false); // 버튼 테두리 없애기
 	      refresh.addActionListener(new ActionListener() {
 
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
 	        	 loggedInPanel.setVisible(false);
-	        	 deleteAdminBtn();
 	        	 refreshLoggedInPanel();
 	         }
 	         
@@ -219,15 +253,20 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      
 	      
 	      
+	      
 	      //sprefresh button
 	      
 	      sprefresh=new JButton("새로고침");
-	      sprefresh.setBounds(500,464,84,25);
+	      sprefresh.setBounds(500,468,84,25);
+	      sprefresh.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	      sprefresh.setForeground(Color.white);
+	      sprefresh.setBackground(new Color(135,77,162));
+	      
+	      sprefresh.setBorderPainted(false); // 버튼 테두리 없애기
 	      sprefresh.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				seatsPanel.setVisible(false);
 				addSeats(currentRoomNumber);
 			}
@@ -238,12 +277,15 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      add(sprefresh);
 		 //LogOutButton
 		logOutBtn = new JButton("로그아웃");
+		logOutBtn.setBorderPainted(false);
+		logOutBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+		logOutBtn.setForeground(Color.white);
+		logOutBtn.setBackground(new Color(135,77,162));
 		logOutBtn.setVisible(true);
 		logOutBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				addMainLogIn();
+				
 				deleteLoggedInPanel();
 				hc.clearData();
 				if (seatsPanel != null) deleteSeats();
@@ -252,11 +294,13 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				if(cRoomPanel != null)
 				cRoomPanel.setVisible(false);
 				refresh.setVisible(false);
+				addMainLogIn();
+				remove(roomPanelLabel);
 				
 			}
 			
 		});
-		logOutBtn.setBounds(699, 464, 84, 25);
+		logOutBtn.setBounds(699, 468, 84, 25);
 		
 		
 		//회원가입 창 입력항목 설정
@@ -273,7 +317,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		//Panel Setting
 
 		logInPanel.setLayout(null);
-		logInPanel.setBounds(275, 220, 250, 150);
+		logInPanel.setBounds(450,160,350,250);
 		logInPanel.setBackground(new Color(255,255,255));
 		logInPanel.add(ID);
 		logInPanel.add(PASSWORD);
@@ -281,6 +325,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		logInPanel.add(pwdLabel);
 		logInPanel.add(logInBtn);
 		logInPanel.add(signUpBtn);
+		logInPanel.add(logTypingLabel);
 		
 		
 		
@@ -290,13 +335,30 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		//Frame Setting
 		this.setLayout(null);
 		this.add(logInPanel);
-		this.add(imagePanel);
 		this.add(exitButton);
+		this.add(imagePanel);
 		this.add(mainLogLabel);
 		this.setSize(800,500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 //		this.setResizable(true);
+		this.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			    xDrag = e.getX();
+			    yDrag = e.getY();
+			    JFrame sFrame = (JFrame) e.getSource();
+			    sFrame.setLocation(sFrame.getLocation().x+xDrag-xPress, 
+			    sFrame.getLocation().y+yDrag-yPress);
+			 }
+			 @Override
+			 public void mouseMoved(MouseEvent e) {
+			     xPress = e.getX();
+			     yPress = e.getY();
+			  }
+			
+		});
 		this.setUndecorated(true);
 		this.setVisible(true);
 	}
@@ -306,38 +368,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	    roomsData = sortJsonArray(roomsData, "roomNum");
 		loggedInPanel = new LoggedInPanel(roomsData);
 		
-		for(int i = 0; i < loggedInPanel.boxCount; i++) {
-			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
-			if (roomsData.getJSONObject(i).isNull("acceptDate")) {
-				loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-//										remove(loggedInPanel);
-//										deleteLoggedInPanel();
-						loggedInPanel.setVisible(false);
-						refresh.setVisible(false);
-						sprefresh.setVisible(true);
-						addSeats(roomNum);
-						deleteAdminBtn();
-						
-						mainBtn.setVisible(true);
-					}
-				});
-			} else {
-				loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						JOptionPane.showMessageDialog(null, "아직 예약할 수 없습니다.", "Message", JOptionPane.ERROR_MESSAGE);
-			            
-					}
-					
-				});
-			}
-		}
+		addActionListenerToButtons();
+		
+		mainBtn.setVisible(false);
+		roomPanelLabel.setVisible(false);
 		addLoggedInPanel();
-		addAdminBtn();
 		
 	}
 
@@ -352,50 +387,40 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			addAdminBtn();
 			
 			//로그인 된 창에서 뒤로가기 눌렀을 때
-			
+			editBtn = new JButton("방설정변경");
+	        editBtn.setBounds(630, 7, 105, 25);
+	        editBtn.setBorderPainted(false);
+			editBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+			editBtn.setForeground(new Color(135,77,162));
+			editBtn.setBackground(Color.white);
+	        add(editBtn);
+	        editBtn.setVisible(false);
+	        editBtn.addActionListener(new ActionListener() {
+	        	
+	        	@Override
+        		public void actionPerformed(ActionEvent e) {
+        			JSONObject roomData = new JSONObject(hc.getOneRoom(currentRoomNumber)).getJSONObject("data").getJSONObject("roomData");
+        			new UpdateRoom(currentRoomNumber, roomData);
+        		}
+	        });
+	        
+	        
 			mainBtn.setVisible(false);
 			//로그인 정보가 일치할 때
 			if(hc.isLoggedIn()) {
 				roomsData = new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData");
 			    roomsData = sortJsonArray(roomsData, "roomNum");
 				loggedInPanel = new LoggedInPanel(roomsData);
-				addLoggedInPanel();
-				deleteMainLogIn();
-				setLogInTextEmpty();
 				refresh.setVisible(true);
 				sprefresh.setVisible(false);
+				
+				deleteMainLogIn();
+				setLogInTextEmpty();
+				addLoggedInPanel();
+
 				//로그인 했을 때 생기는 Buttons
 				
-				for(int i = 0; i < loggedInPanel.boxCount; i++) {
-					int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
-					if (roomsData.getJSONObject(i).isNull("acceptDate")) {
-						loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
-//											//예약버튼 눌렀을 때
-//											@Override
-							public void actionPerformed(ActionEvent e) {
-//												remove(loggedInPanel);
-//												deleteLoggedInPanel();
-								loggedInPanel.setVisible(false);
-								addSeats(roomNum);
-								deleteAdminBtn();
-								refresh.setVisible(false);
-								mainBtn.setVisible(true);
-								sprefresh.setVisible(true);
-								currentRoomNumber=roomNum;
-							}
-						});
-					} else {
-						loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
-
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								JOptionPane.showMessageDialog(null, "아직 예약할 수 없습니다.", "Message", JOptionPane.ERROR_MESSAGE);
-					            
-							}
-							
-						});
-					}
-				}
+				addActionListenerToButtons();
 				
 				//로그인 정보가 불일치할 때
 			}else {
@@ -413,27 +438,35 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			signUpPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/signup.jpg")));
 			signUpPanelLabel.setBounds(0, 0, 800, 500);
 
-			logInLabelPanel.setLayout(new GridLayout(6,0,10,10));
-			logInLabelPanel.setBounds(200,130,130,200);
-			logInLabelPanel.setBackground(Color.white);
+//			logInLabelPanel.setLayout(new GridLayout(6,0,10,10));
+//			logInLabelPanel.setBounds(200,130,130,200);
+//			logInLabelPanel.setBackground(Color.white);
 			
 			
 			//회원가입창의 버튼
 			signUpBtn2 = new JButton("회원가입");
 			backBtn = new JButton("뒤로가기");
-			signUpBtnPanel.add(backBtn);
-			signUpBtn2.setBackground(new Color(255,128,0));
-			signUpBtnPanel.add(signUpBtn2);
-			signUpBtnPanel.setBounds(315,350,180,35);
+			
+			signUpBtn2.setBackground(Color.gray);
+			signUpBtn2.setBorderPainted(false);
+			backBtn.setBorderPainted(false);
+			
+			signUpBtnPanel.setBounds(515,420,180,35);
 			signUpBtnPanel.setBackground(Color.white);
 			
 			signUpMainPanel = new JPanel();
-			signUpMainPanel.setSize(400,300);
-
-			signUpPanel.add(signUpMainPanel);
-			signUpPanel.setBackground(new Color(255, 0, 0, 0));
-			signUpBtnPanel.add(signUpMainPanel);
+			signUpMainPanel.setSize(400,300);		
+			
+			signUpPanel.setBackground(new Color(255,255,255,0));
 			signUpMainPanel.setBounds(350,550,300,200);
+
+
+			
+			signUpPanel.add(signUpMainPanel);		
+			signUpBtnPanel.add(backBtn);
+			signUpBtnPanel.add(signUpBtn2);
+			signUpBtnPanel.add(signUpMainPanel);
+
 			
 			signUpBtn2.addActionListener(new ActionListener() {
 				@Override
@@ -452,10 +485,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		                        signUpPanel.fields[0].getText(), 
 		                        yjuNum, 
 		                        signUpPanel.fields[5].getText());
-					System.out.println(res);
-					JSONObject jo = new JSONObject(res);
-					if (!signUpPanel.pwdFields[0].getPassword().equals(signUpPanel.pwdFields[1].getPassword())) {
+		               			JSONObject jo = new JSONObject(res);
+		               			
+					if (!Arrays.equals(signUpPanel.pwdFields[0].getPassword(), signUpPanel.pwdFields[1].getPassword())) {
 						JOptionPane.showInternalMessageDialog(null, "비밀번호가 동일하지 않습니다.", "Error",1);
+						return;
 					}
 					else if (jo.isNull("status")) {
 						JOptionPane.showInternalMessageDialog(null, "회원가입이 완료되었습니다.\n 다시 로그인 해주십시오.","회원가입 완료",1);
@@ -465,8 +499,10 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 						deleteSignUpPanel();
 						deleteInfo();
 						addMainLogIn();
+						return;
 					} else {
 						JOptionPane.showInternalMessageDialog(null, jo.getString("message"), "Error",1);
+						return;
 					}
 				}				
 			});
@@ -478,7 +514,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 					deleteSignUpPanel();
 					deleteInfo();
 					addMainLogIn();
-					setLogInTextEmpty();
+//					setLogInTextEmpty();
 				}
 			});
 			deleteMainLogIn();
@@ -487,6 +523,65 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	
+	private void addActionListenerToButtons() {
+
+		for(int i = 0; i < loggedInPanel.boxCount; i++) {
+			int roomNum = roomsData.getJSONObject(i).getInt("roomNum");
+			if (roomsData.getJSONObject(i).isNull("acceptDate")) {
+				loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
+//									//예약버튼 눌렀을 때
+//									@Override
+					public void actionPerformed(ActionEvent e) {
+//										remove(loggedInPanel);
+//										deleteLoggedInPanel();
+						if (hc.isAdmin()) {
+							editBtn.setVisible(true);
+						}
+						loggedInPanel.setVisible(false);
+						addSeats(roomNum);
+						deleteAdminBtn();
+						refresh.setVisible(false);
+						mainBtn.setVisible(true);
+						sprefresh.setVisible(true);
+						currentRoomNumber=roomNum;
+					}
+				});
+			} else {
+				if (!hc.isAdmin()) {
+					loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							JOptionPane.showMessageDialog(null, "아직 예약할 수 없습니다.", "Message", JOptionPane.ERROR_MESSAGE);
+							
+						}
+						
+					});
+				} else {
+					loggedInPanel.reserveBtn[i].addActionListener(new ActionListener() {
+//						//예약버튼 눌렀을 때
+//						@Override
+						public void actionPerformed(ActionEvent e) {
+				//							remove(loggedInPanel);
+				//							deleteLoggedInPanel();
+							if (hc.isAdmin()) {
+								editBtn.setVisible(true);
+							}
+							loggedInPanel.setVisible(false);
+							addSeats(roomNum);
+							deleteAdminBtn();
+							refresh.setVisible(false);
+							mainBtn.setVisible(true);
+							sprefresh.setVisible(true);
+							currentRoomNumber=roomNum;
+						}
+					});
+				}
+			}
+		}
+		
+	}
+
 	//changes display
 	
 	public void setLogInTextEmpty() {
@@ -495,12 +590,12 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	public void addSignUpPanel() {
-		logInLabelPanel.setVisible(true);
-		signUpPanel.setVisible(true);
+		add(signUpPanel);
 		add(logInLabelPanel);
 		add(signUpBtnPanel);
-		add(signUpPanel);
 		add(signUpPanelLabel);
+		logInLabelPanel.setVisible(true);
+		signUpPanel.setVisible(true);
 	}
 	
 	public void deleteSignUpPanel() {
@@ -511,134 +606,953 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	public void addLoggedInPanel() {
-		if(hc.isAdmin()) {
-//			add(loggedInPanel.reserve);
-			loggedInPanel.btnPanel.setPreferredSize(new Dimension(600, (50 / 4 + 1) * 100));
-			loggedInPanel.scroll.setPreferredSize(new Dimension(600, 405));
-			loggedInPanel.setBounds(6, 49, 600, 405);
-			add(cRoom);
-			add(dRoom);
-			add(resetDate);
-			add(aRoom);
-		}
 		add(welcome);
 		welcome.setVisible(true);
 		loggedInPanel.setVisible(true);
-		welcome.setText("안녕하세요. " + hc.getName() + "님");
+		welcome.setText(hc.getName() + "님 반갑습니다.");
 		add(logOutBtn);
-		add(loggedInPanel);
+		add(loggedInPanel);	
 		
-		
+		if(hc.isAdmin()) {
+			add(cRoom);
+			add(dRoom);
+			add(aBtn);
+		}
+		roomPanelLabel = new AntialiasedLabel("");
+		roomPanelLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/room.jpg")));
+		roomPanelLabel.setBounds(0, 0, 800, 500);
+		add(roomPanelLabel);
 	}
 	
 	class CreateRoom extends JFrame implements ActionListener{
-		public CreateRoom() {
-		
-		setSize(370,347);
-		setLayout(null);
-		roomNum = new JTextField();
-		roomNum.setBounds(125,35,150,25);
-		roomNum.setToolTipText("숫자로만 입력하세요.");
-		roomNumLabel = new JLabel("강의실 호수");
-		roomNumLabel.setBounds(48,35,70,25);
-		roomNumLabel.setHorizontalAlignment(JLabel.RIGHT);
-		add(roomNumLabel);
-		add(roomNum);
-		
-		col = new JTextField();
-		col.setBounds(125,82,150,25);
-		col.setToolTipText("숫자로만 입력하세요.");
-		colLabel = new JLabel("열 수");
-		colLabel.setBounds(65,82,50,25);
-		colLabel.setHorizontalAlignment(JLabel.RIGHT);
-		add(colLabel);
-		add(col);
-		
+	       JTextField[] fields;
+//	       String[] fieldsName = {"roomNum", "year", "month", "date", "hour", "minute"};
+	       
+	       JLabel[] labels;
+	       String[] labelsName = {"강의실 호수", "년", "월", "일", "시간","분"};
+	       
+	       //초기화 날짜 설정
+	       UtilDateModel model = new UtilDateModel();
+	       JDatePanelImpl datePanel = new JDatePanelImpl(model);
+	       JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
+	       JComboBox<String> resetHour = new JComboBox<>();
+	       JComboBox<String> resetMinute = new JComboBox<>();
+	       JLabel hour = new JLabel("시");
+	       JLabel minute = new JLabel("분");
+	       JCheckBox shuffle;
+	       JComboBox<String> weekBox;
+	       JTextField weekDelayField;
+	       JComboBox<String> monthWeekBox;
+	       JComboBox<String> dayBox;
+	       JTextField monthResetDelayField;
+	       JTextField noResetDelayField;
+	       
+	       //예약시작시간 설정
+	       UtilDateModel model2 = new UtilDateModel();
+	       JDatePanelImpl datePanel2 = new JDatePanelImpl(model2);
+	       JDatePickerImpl datePicker2 = new JDatePickerImpl(datePanel2);
+	       JComboBox<String> startHour = new JComboBox<>();
+	       JComboBox<String> startMinute = new JComboBox<>();
+	       JLabel hour2 = new JLabel("시");
+	       JLabel minute2 = new JLabel("분");
+	       
+	       //3번째항목 패널
+	       JPanel p1 = new JPanel();
+	       JPanel p2 = new JPanel();
+	       JPanel p3 = new JPanel();
+//	       JButton b1 = new JButton();
+//	       JButton b2 = new JButton();
+//	       JButton b3 = new JButton();
+	       
+	       //옵션 리스트
+	       JComboBox<String> options = new JComboBox<>();
+	       
+	       
+	      public CreateRoom() {
+	      setTitle("강의실 예약하기");
+	      setSize(900,450);
+	      setLayout(null);
+	      roomNumField = new JTextField();
+	      roomNumField.setBounds(115,35,150,25);
+	      roomNumField.setToolTipText("숫자로만 입력하세요.");
+	      roomNumLabel = new JLabel("강의실 호수");
+	      roomNumLabel.setBounds(38,35,70,25);
+	      roomNumLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(roomNumLabel);
+	      add(roomNumField);
+	      
+	      colField = new JTextField();
+	      colField.setBounds(115,82,150,25);
+	      colField.setToolTipText("숫자로만 입력하세요.");
+	      colLabel = new JLabel("열 수");
+	      colLabel.setBounds(55,82,50,25);
+	      colLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(colLabel);
+	      add(colField);
+	      
 
-		row = new JTextField();
-		row.setBounds(125,129,150,25);
-		row.setToolTipText("숫자로만 입력하세요.");
-		rowLabel = new JLabel("행 수");
-		rowLabel.setBounds(65,129,50,25);
-		rowLabel.setHorizontalAlignment(JLabel.RIGHT);
-		add(rowLabel);
-		add(row);
-		
-		
-		colBlank = new JTextField();
-		colBlank.setBounds(125,176,150,25);
-		colBlankLabel = new JLabel("열 띄우기");
-		colBlankLabel.setBounds(35,176,80,25);
-		colBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
-		add(colBlankLabel);
-		add(colBlank);
-		
-		rowBlank = new JTextField();
-		rowBlank.setBounds(125,223,150,25);
-		rowBlankLabel = new JLabel("행 띄우기");
-		rowBlankLabel.setBounds(35,223,80,25);
-		rowBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
-		add(rowBlankLabel);
-		add(rowBlank);
-		
-		makeRoomBtn = new JButton("방만들기");
-		makeRoomBtn.addActionListener(this);
-		makeRoomBtn.setBounds(190,265,85,25);
-		add(makeRoomBtn);
-//			
-//			cRoomPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-//			cRoomPanel.setLayout(new GridLayout(4,2,15,15));
-//			cRoomPanel.setBounds(63,78,500,350);
-//			add(cRoomPanel);
-		setLocationRelativeTo(null);
-		setVisible(true);
-		}
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			StringTokenizer colst = new StringTokenizer(colBlank.getText(), ", ");
-			StringTokenizer rowst = new StringTokenizer(rowBlank.getText(), ", ");
-			int[] colBlankArray = new int[colst.countTokens()];
-			int[] rowBlankArray = new int[rowst.countTokens()];
-			
-			System.out.println("coltokencount: " + colst.countTokens());
-			System.out.println("rowtokencount: " + rowst.countTokens());
-			
-			for (int i=0; i<colBlankArray.length; i++) {
-				colBlankArray[i] = Integer.valueOf(colst.nextToken());
-			}
-			for (int i=0; i<rowBlankArray.length; i++) {
-				rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
-			}
-			
-			for (int a : colBlankArray) {
-				System.out.println("colblank: " + a);
-			}
-			for (int a : rowBlankArray) {
-				System.out.println("rowblank: " + a);
-			}
-			System.out.println("colblanklength: " + colBlankArray.length);
-			System.out.println("rowblanklength: " + rowBlankArray.length);
-			
-			hc.postCreateRoom(Integer.valueOf(roomNum.getText()), 
-							  Integer.valueOf(col.getText()), 
-							  Integer.valueOf(row.getText()), 
-							  colBlankArray.length == 0 ? null : colBlankArray,
-							  rowBlankArray.length == 0 ? null : rowBlankArray);
-//			loggedInPanel.removeAll();
-//			roomsData = new JSONObject(hc.getAllRoom()).getJSONObject("data").getJSONArray("roomsData");
-//		    roomsData = sortJsonArray(roomsData, "roomNum");
-//			loggedInPanel = new LoggedInPanel(roomsData);
-//			loggedInPanel.revalidate();
-//			loggedInPanel.repaint();
-//			addLoggedInPanel();
-			loggedInPanel.setVisible(false);
-			deleteAdminBtn();
-			refreshLoggedInPanel();
-			dispose();
-		}
-		
-	}
+	      rowField = new JTextField();
+	      rowField.setBounds(115,129,150,25);
+	      rowField.setToolTipText("숫자로만 입력하세요.");
+	      rowLabel = new JLabel("행 수");
+	      rowLabel.setBounds(55,129,50,25);
+	      rowLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(rowLabel);
+	      add(rowField);
+	      
+	      
+	      colBlankField = new JTextField();
+	      colBlankField.setBounds(115,176,150,25);
+	      colBlankLabel = new JLabel("열 띄우기");
+	      colBlankLabel.setBounds(25,176,80,25);
+	      colBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(colBlankLabel);
+	      add(colBlankField);
+	      
+	      rowBlankField = new JTextField();
+	      rowBlankField.setBounds(115,223,150,25);
+	      rowBlankLabel = new JLabel("행 띄우기");
+	      rowBlankLabel.setBounds(25,223,80,25);
+	      rowBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(rowBlankLabel);
+	      add(rowBlankField);
+	      
+	      makeRoomBtn = new JButton("방만들기");
+	      makeRoomBtn.addActionListener(this);
+	      makeRoomBtn.setBounds(180,265,85,25);
+	      add(makeRoomBtn);
+//	         
+//	         cRoomPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+//	         cRoomPanel.setLayout(new GridLayout(4,2,15,15));
+//	         cRoomPanel.setBounds(63,78,500,350);
+//	         add(cRoomPanel);
+	      
+	     //Reset Date  
+	    add(datePicker);
+	    datePicker.setBounds(340,35,200,30);
+	   
+
+	    JLabel selectDate = new JLabel("좌석초기화 날짜 선택");
+	    selectDate.setBounds(380,4,140,30);
+	    add(selectDate);
+	     
+	    for(int i = 0; i<24; i++) {
+	       resetHour.addItem(String.valueOf(i));
+	    }
+	    resetHour.setBounds(350,74,42,28);
+	    resetHour.setMaximumRowCount(5);
+	    add(resetHour);
+	   
+	    for(int i = 0; i<12; i++) {
+	       resetMinute.addItem(String.valueOf(i*5));
+	    } 
+	    resetMinute.setBounds(465,74,42,28);
+	    resetMinute.setMaximumRowCount(5);
+	    add(resetMinute);
+	    
+	    
+	    hour.setBounds(395,74,35,28);
+	    add(hour);
+	    minute.setBounds(510,74,35,28);
+	    add(minute);
+	    
+	    
+	    
+	     //start date
+	      add(datePicker2);
+	    datePicker2.setBounds(340,190,200,30);
+	    
+	    JLabel selectDate2 = new JLabel("예약시작 날짜 선택");
+	    selectDate2.setBounds(382,159,140,30);
+	    add(selectDate2);
+	    
+	    for(int i = 0; i<24; i++) {
+	       startHour.addItem(String.valueOf(i));
+	    }
+	    startHour.setBounds(350,229,42,28);
+	    startHour.setMaximumRowCount(5); 
+	    add(startHour);
+	   
+	    for(int i = 0; i<12; i++) {
+	       startMinute.addItem(String.valueOf(i*5));
+	    } 
+	    startMinute.setBounds(465,229,42,28);
+	    startMinute.setMaximumRowCount(5);
+	    add(startMinute);
+	    
+	    
+	    hour2.setBounds(395,229,42,28);
+	    add(hour2);
+	    
+	    minute2.setBounds(510,229,42,28);
+	    add(minute2);
+
+	    //shuffle checkBox
+	    shuffle = new JCheckBox("  리셋 시 셔플");
+	    shuffle.setBounds(445,300,100,20);
+	    shuffle.setHorizontalTextPosition(SwingConstants.RIGHT);
+	    add(shuffle);
+	    
+	    
+	    //3번째 항목들
+	    options.addItem("주기적 초기화 설정안함");
+	    options.addItem("주 단위 초기화");
+	    options.addItem("월 단위 초기화");
+	    
+	    options.setBounds(620,35,220,25);
+	    DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer. CENTER);
+	    options.setRenderer(listRenderer);
+	    
+	    
+	    
+	    // 패널 설정
+	    DefaultListCellRenderer right = new DefaultListCellRenderer();
+	    right.setHorizontalAlignment(DefaultListCellRenderer. RIGHT);
+	    
+	    
+	       //주 단위 설정
+	      p1.setBounds(595, 80, 270, 300);
+	      p1.setBorder(BorderFactory.createLineBorder(Color.magenta));
+	      p1.setLayout(null);
+	      
+	      JLabel week = new JLabel("주 간격");
+	      week.setBounds(70,25,50,20);
+	      
+	      JLabel weekDelay = new JLabel("오픈지연(분)");
+	      weekDelay.setBounds(60,65,80,20);
+	      
+	      weekBox = new JComboBox<>();
+	      for(int i = 1; i <5 ; i++) weekBox.addItem(String.valueOf(i));
+	      weekBox.setBounds(70,27,80,20);
+	      weekBox.setBounds(140,25,80,20);
+	      
+	      weekDelayField = new JTextField();
+	      weekDelayField.setBounds(140,65,80,20);
+	      
+	      p1.add(week);
+	      p1.add(weekDelay);
+	      p1.add(weekBox);
+	      p1.add(weekDelayField);
+	      add(p1);
+	      p1.setVisible(false);
+	      
+	      //월 단위 설정
+	      p2.setBounds(595, 80, 270, 300);
+	      p2.setBorder(BorderFactory.createLineBorder(Color.blue));
+	      p2.setLayout(null);
+	      
+	      JLabel monthResetWeek = new JLabel("번째 주");
+	      monthResetWeek.setBounds(155,25,50,20);
+	      
+	      JLabel day = new JLabel("요일");
+	      day.setBounds(155,65,50,20);
+	      
+	      
+	      JLabel monthResetDelay = new JLabel("오픈지연(분)");
+	      monthResetDelay.setBounds(60,105,80,20);
+	      monthWeekBox = new JComboBox<>();
+	      for(int i = 1; i <5 ; i++) monthWeekBox.addItem(String.valueOf(i));
+	      monthWeekBox.setRenderer(right);
+	      monthWeekBox.setBounds(70,27,80,20);
+	      
+	      
+	      
+	      dayBox = new JComboBox<>();
+	      String[] days = {"일","월","화","수","목","금","토"};
+	      for(int i = 0; i < 7; i++) {         
+	         dayBox.addItem(days[i]);
+	      }
+	      dayBox.setRenderer(right);
+	      dayBox.setBounds(70,67,80,20);
+	      
+	      monthResetDelayField = new JTextField();
+	      monthResetDelayField.setBounds(140,105,80,20);
+	      
+	      p2.add(monthResetDelay);
+	      p2.add(day);
+	      p2.add(monthResetWeek);
+	      p2.add(monthWeekBox);
+	      p2.add(dayBox);
+	      p2.add(monthResetDelayField);
+	      add(p2);
+	      p2.setVisible(false);
+	      
+	      
+	      //초기화 설정 안함
+	      p3.setBounds(595, 80, 270, 300);
+	      p3.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	      p3.setLayout(null);
+	      
+	      JLabel noResetDelay = new JLabel("오픈지연(분)");
+	      noResetDelay.setBounds(60,105,80,20);
+	      
+	      noResetDelayField = new JTextField();
+	      noResetDelayField.setBounds(140,105,80,20);
+	      
+	      p3.add(noResetDelay);
+	      p3.add(noResetDelayField);
+	      add(p3);
+	      p3.setVisible(true);
+	      
+	      
+	      
+	    options.addActionListener(new ActionListener() {
+
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	         
+	         
+	         int index = options.getSelectedIndex();
+
+	         if(index == 0) {
+	            if(p3!=null) {
+	            p1.setVisible(false);
+	            p2.setVisible(false);
+	            }
+	            p3.setVisible(true);
+	         }
+	         else if(index==1) {
+	            if(p2 != null) {
+	               p2.setVisible(false);
+	               p3.setVisible(false);
+	            }
+	            p1.setVisible(true);
+	         }
+	         else if(index==2) {
+	         if(p1!=null) {
+	         p1.setVisible(false);
+	         p3.setVisible(false);
+	         }
+	         p2.setVisible(true);
+	         }
+	      }
+	       
+	    });
+	    add(options);
+	   
+	    
+	    
+//	    b1.setBounds(650,35,35,35);
+//	    b1.addActionListener(this);
+	//    
+	//    
+//	    b2.setBounds(690,35,35,35);
+//	    b3.setBounds(730,35,35,35);
+//	    add(b1);
+//	    add(b2);
+//	    add(b3);
+	      setLocationRelativeTo(null);
+	      setVisible(true);
+	      }
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        RoomCreator rc = new RoomCreator();
+	         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
+	         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
+	         int[] colBlankArray = new int[colst.countTokens()];
+	         int[] rowBlankArray = new int[rowst.countTokens()];
+	         
+	         for (int i=0; i<colBlankArray.length; i++) {
+	            colBlankArray[i] = Integer.valueOf(colst.nextToken());
+	         }
+	         for (int i=0; i<rowBlankArray.length; i++) {
+	            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+	         }
+	         
+	         int roomNum = Integer.valueOf(roomNumField.getText());
+	         int col = Integer.valueOf(colField.getText());
+	         int row = Integer.valueOf(rowField.getText());
+	         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
+	         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
+	         rc.setRoomNum(roomNum);
+	         rc.setCol(col);
+	         rc.setRow(row);
+	         if (colBlank != null) {
+	            rc.setColBlank(colBlank);
+	         }
+	         if (rowBlank != null) {
+	            rc.setRowBlank(rowBlank);
+	         }
+	         
+	         
+	         Date resetDate = (Date) datePicker.getModel().getValue();
+	         if (resetDate != null) {
+	            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
+	            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
+	            resetDate.setSeconds(0);
+	            rc.setResetDate(resetDate);
+	         }
+	         
+	         Date acceptDate = (Date) datePicker2.getModel().getValue();
+	         if (acceptDate != null) {
+	            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
+	            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
+	            acceptDate.setSeconds(0);
+	            rc.setAcceptDate(acceptDate);
+	         }
+	         
+	         boolean isShuffle = shuffle.isSelected();
+	         rc.setShuffle(isShuffle);
+	         int openDeffer;
+	         
+	         int measure = options.getSelectedIndex();
+	         if (measure == 1) {
+	            measure = 0;
+	            int weekendInterval = weekBox.getSelectedIndex()+1;
+	            rc.setMeasure(measure);
+	            rc.setWeekendInterval(weekendInterval);
+	            if (!weekDelayField.getText().equals("")) {
+			        openDeffer = Integer.valueOf(weekDelayField.getText());
+			        rc.setOpenDeffer(openDeffer);
+			     } else {
+			        rc.setOpenDeffer(0);
+			     }
+	         }else if (measure == 2) {
+	            measure = 1;
+	            int weekNth = monthWeekBox.getSelectedIndex()+1;
+	            int day = dayBox.getSelectedIndex();
+	            rc.setWeekNth(weekNth);
+	            rc.setMeasure(measure);
+	            rc.setDay(day);
+	            if (!monthResetDelayField.getText().equals("")) {
+	 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
+	 	           rc.setOpenDeffer(openDeffer);
+	 	         } else {
+	 	        	rc.setOpenDeffer(0);
+	 	         }
+	         }
+	         
+	         System.out.println(hc.postCreateRoom(rc));
+	         loggedInPanel.setVisible(false);
+        	 refreshLoggedInPanel();
+	         dispose();
+	         
+	      }
+	      
+	   }
+	
+	class UpdateRoom extends JFrame implements ActionListener{
+	       JTextField[] fields;
+//	       String[] fieldsName = {"roomNum", "year", "month", "date", "hour", "minute"};
+	       
+	       JLabel[] labels;
+	       String[] labelsName = {"강의실 호수", "년", "월", "일", "시간","분"};
+	       
+	       //초기화 날짜 설정
+	       UtilDateModel model = new UtilDateModel();
+	       JDatePanelImpl datePanel = new JDatePanelImpl(model);
+	       JDatePickerImpl datePicker = new JDatePickerImpl(datePanel);
+	       JComboBox<String> resetHour = new JComboBox<>();
+	       JComboBox<String> resetMinute = new JComboBox<>();
+	       JLabel hour = new JLabel("시");
+	       JLabel minute = new JLabel("분");
+	       JCheckBox shuffle;
+	       JComboBox<String> weekBox;
+	       JTextField weekDelayField;
+	       JComboBox<String> monthWeekBox;
+	       JComboBox<String> dayBox;
+	       JTextField monthResetDelayField;
+	       JTextField noResetDelayField;
+	       
+	       //예약시작시간 설정
+	       UtilDateModel model2 = new UtilDateModel();
+	       JDatePanelImpl datePanel2 = new JDatePanelImpl(model2);
+	       JDatePickerImpl datePicker2 = new JDatePickerImpl(datePanel2);
+	       JComboBox<String> startHour = new JComboBox<>();
+	       JComboBox<String> startMinute = new JComboBox<>();
+	       JLabel hour2 = new JLabel("시");
+	       JLabel minute2 = new JLabel("분");
+	       
+	       //3번째항목 패널
+	       JPanel p1 = new JPanel();
+	       JPanel p2 = new JPanel();
+	       JPanel p3 = new JPanel();
+//	       JButton b1 = new JButton();
+//	       JButton b2 = new JButton();
+//	       JButton b3 = new JButton();
+	       
+	       //옵션 리스트
+	       JComboBox<String> options = new JComboBox<>();
+	       
+	       
+	      public UpdateRoom(int roomNum, JSONObject roomData) {
+	      setTitle("강의실 예약하기");
+	      setSize(900,450);
+	      setLayout(null);
+	      roomNumField = new JTextField();
+	      roomNumField.setBounds(115,35,150,25);
+	      roomNumField.setToolTipText("숫자로만 입력하세요.");
+	      roomNumField.setEditable(false);
+	      roomNumField.setText(String.valueOf(roomNum));
+	      roomNumLabel = new JLabel("강의실 호수");
+	      roomNumLabel.setBounds(38,35,70,25);
+	      roomNumLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(roomNumLabel);
+	      add(roomNumField);
+	      
+	      
+	      colField = new JTextField();
+	      colField.setBounds(115,82,150,25);
+	      colField.setText(String.valueOf(roomData.getInt("column")));
+	      colField.setToolTipText("숫자로만 입력하세요.");
+	      colLabel = new JLabel("열 수");
+	      colLabel.setBounds(55,82,50,25);
+	      colLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(colLabel);
+	      add(colField);
+	      
+
+	      rowField = new JTextField();
+	      rowField.setBounds(115,129,150,25);
+	      rowField.setText(String.valueOf(roomData.getInt("row")));
+	      rowField.setToolTipText("숫자로만 입력하세요.");
+	      rowLabel = new JLabel("행 수");
+	      rowLabel.setBounds(55,129,50,25);
+	      rowLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(rowLabel);
+	      add(rowField);
+	      
+	      
+	      colBlankField = new JTextField();
+	      colBlankField.setBounds(115,176,150,25);
+	      colBlankLabel = new JLabel("열 띄우기");
+	      colBlankLabel.setBounds(25,176,80,25);
+	      if (!roomData.isNull("columnBlankLine")) {  
+	    	  JSONArray colArray = roomData.getJSONArray("columnBlankLine");
+	    	  String colBlankText = "";
+	    	  for (int i=0; i<colArray.length(); i++) {
+	    		  colBlankText += colArray.get(i);
+	    		  if (i != colArray.length()-1)
+	    			  colBlankText += ", ";
+	    	  }
+	    	  colBlankField.setText(colBlankText);
+	      }
+	      colBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(colBlankLabel);
+	      add(colBlankField);
+	      
+	      rowBlankField = new JTextField();
+	      rowBlankField.setBounds(115,223,150,25);
+	      if (!roomData.isNull("rowBlankLine")) {
+	    	  JSONArray rowArray = roomData.getJSONArray("rowBlankLine");
+		      String rowBlankText = "";
+		      for (int i=0; i<rowArray.length(); i++) {
+		    	  rowBlankText += rowArray.get(i);
+		    	  if (i != rowArray.length()-1)
+		    	  rowBlankText += ", ";
+		      }
+		      rowBlankField.setText(rowBlankText);
+	      }
+	      
+	      rowBlankLabel = new JLabel("행 띄우기");
+	      rowBlankLabel.setBounds(25,223,80,25);
+	      rowBlankLabel.setHorizontalAlignment(JLabel.RIGHT);
+	      add(rowBlankLabel);
+	      add(rowBlankField);
+	     
+	      makeRoomBtn = new JButton("설정변경");
+	      makeRoomBtn.addActionListener(this);
+	      makeRoomBtn.setBounds(180,265,85,25);
+	      add(makeRoomBtn);
+	     
+	      
+//	         
+//	         cRoomPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+//	         cRoomPanel.setLayout(new GridLayout(4,2,15,15));
+//	         cRoomPanel.setBounds(63,78,500,350);
+//	         add(cRoomPanel);
+	      
+	     //Reset Date  
+	    add(datePicker);
+	    datePicker.setBounds(340,35,200,30);
+	    model.setDate(2022, 7, 5);
+	   
+
+	    JLabel selectDate = new JLabel("좌석초기화 날짜 선택");
+	    selectDate.setBounds(380,4,140,30);
+	    add(selectDate);
+	     
+	    for(int i = 0; i<24; i++) {
+	       resetHour.addItem(String.valueOf(i));
+	    }
+	    resetHour.setBounds(350,74,42,28);
+	    resetHour.setMaximumRowCount(5);
+	    add(resetHour);
+	   
+	    for(int i = 0; i<12; i++) {
+	       resetMinute.addItem(String.valueOf(i*5));
+	    } 
+	    resetMinute.setBounds(465,74,42,28);
+	    resetMinute.setMaximumRowCount(5);
+//	    resetMinute.setSelectedIndex(anIndex);
+	    add(resetMinute);
+	    
+	    
+	    hour.setBounds(395,74,35,28);
+	    add(hour);
+	    minute.setBounds(510,74,35,28);
+	    add(minute);
+	    
+	    
+	    
+	     //start date
+	      add(datePicker2);
+	    datePicker2.setBounds(340,190,200,30);
+	    
+	    JLabel selectDate2 = new JLabel("예약시작 날짜 선택");
+	    selectDate2.setBounds(382,159,140,30);
+	    add(selectDate2);
+	    
+	    for(int i = 0; i<24; i++) {
+	       startHour.addItem(String.valueOf(i));
+	    }
+	    startHour.setBounds(350,229,42,28);
+	    startHour.setMaximumRowCount(5); 
+//	    startHour.setSelectedIndex(anIndex);
+	    add(startHour);
+	   
+	    for(int i = 0; i<12; i++) {
+	       startMinute.addItem(String.valueOf(i*5));
+	    } 
+	    startMinute.setBounds(465,229,42,28);
+	    startMinute.setMaximumRowCount(5);
+//	    startMinute.setSelectedIndex(anIndex);
+	    add(startMinute);
+	    
+	    
+	    hour2.setBounds(395,229,42,28);
+	    add(hour2);
+	    
+	    minute2.setBounds(510,229,42,28);
+	    add(minute2);
+
+	    //shuffle checkBox
+	    shuffle = new JCheckBox("  리셋 시 셔플");
+	    shuffle.setBounds(445,300,100,20);
+	    shuffle.setHorizontalTextPosition(SwingConstants.RIGHT);
+	    if(roomData.getBoolean("isShuffle")==true) {
+	    	shuffle.setSelected(true);
+	    }else shuffle.setSelected(false);
+	    add(shuffle);
+	    
+	    
+	    //3번째 항목들
+	    options.addItem("주기적 초기화 설정안함");
+	    options.addItem("주 단위 초기화");
+	    options.addItem("월 단위 초기화");
+	    
+	    options.setBounds(620,35,220,25);
+	    DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
+	    listRenderer.setHorizontalAlignment(DefaultListCellRenderer. CENTER);
+	    options.setRenderer(listRenderer);
+	    
+	    
+	    
+	    // 패널 설정
+	    DefaultListCellRenderer right = new DefaultListCellRenderer();
+	    right.setHorizontalAlignment(DefaultListCellRenderer. RIGHT);
+	    
+	    
+	       //주 단위 설정
+	      p1.setBounds(595, 80, 270, 300);
+	      p1.setBorder(BorderFactory.createLineBorder(Color.magenta));
+	      p1.setLayout(null);
+	      
+	      JLabel week = new JLabel("주 간격");
+	      week.setBounds(70,25,50,20);
+	      
+	      JLabel weekDelay = new JLabel("오픈지연(분)");
+	      weekDelay.setBounds(60,65,80,20);
+	      
+	      weekBox = new JComboBox<>();
+	      for(int i = 1; i <5 ; i++) weekBox.addItem(String.valueOf(i));
+//	      weekBox.setSelectedIndex(roomData.);
+	      weekBox.setBounds(140,25,80,20);
+	      
+	      
+	      weekDelayField = new JTextField();
+	      weekDelayField.setBounds(140,65,80,20);
+	      if(!roomData.isNull("openDeffer"))
+	      weekDelayField.setText(String.valueOf(roomData.getInt("openDeffer")));
+	      
+	      p1.add(week);
+	      p1.add(weekDelay);
+	      p1.add(weekBox);
+	      p1.add(weekDelayField);
+	      add(p1);
+	      p1.setVisible(false);
+	      
+	      //월 단위 설정
+	      p2.setBounds(595, 80, 270, 300);
+	      p2.setBorder(BorderFactory.createLineBorder(Color.blue));
+	      p2.setLayout(null);
+	      
+	      JLabel monthResetWeek = new JLabel("번째 주");
+	      monthResetWeek.setBounds(155,25,50,20);
+	      
+	      
+	      JLabel day = new JLabel("요일");
+	      day.setBounds(155,65,50,20);
+	      
+	      
+	      JLabel monthResetDelay = new JLabel("오픈지연(분)");
+	      monthResetDelay.setBounds(60,105,80,20);
+	      monthWeekBox = new JComboBox<>();
+	      for(int i = 1; i <5 ; i++) monthWeekBox.addItem(String.valueOf(i));
+	      monthWeekBox.setRenderer(right);
+	      monthWeekBox.setBounds(70,27,80,20);
+	      
+	      
+	      
+	      dayBox = new JComboBox<>();
+	      String[] days = {"일","월","화","수","목","금","토"};
+	      for(int i = 0; i < 7; i++) {         
+	         dayBox.addItem(days[i]);
+	      }
+	      dayBox.setRenderer(right);
+	      dayBox.setBounds(70,67,80,20);
+	      
+	      monthResetDelayField = new JTextField();
+	      monthResetDelayField.setBounds(140,105,80,20);
+	      if(!roomData.isNull("openDeffer"))
+		      monthResetDelayField.setText(String.valueOf(roomData.getInt("openDeffer")));
+	      
+	      p2.add(monthResetDelay);
+	      p2.add(day);
+	      p2.add(monthResetWeek);
+	      p2.add(monthWeekBox);
+	      p2.add(dayBox);
+	      p2.add(monthResetDelayField);
+	      add(p2);
+	      p2.setVisible(false);
+	      
+	      
+	      //초기화 설정 안함
+	      p3.setBounds(595, 80, 270, 300);
+	      p3.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	      p3.setLayout(null);
+	      
+	      JLabel noResetDelay = new JLabel("오픈지연(분)");
+	      noResetDelay.setBounds(60,105,80,20);
+	      
+	      noResetDelayField = new JTextField();
+	      noResetDelayField.setBounds(140,105,80,20);
+	      if(!roomData.isNull("openDeffer"))
+		      noResetDelayField.setText(String.valueOf(roomData.getInt("openDeffer")));
+	      
+	      p3.add(noResetDelay);
+	      p3.add(noResetDelayField);
+	      add(p3);
+	      p3.setVisible(true);
+	      
+	      
+	      if (!roomData.isNull("measure")) {
+	    	  if(roomData.getInt("measure")==0) {
+	    		  
+	    		  options.setSelectedIndex(1);
+	    		  weekBox.setSelectedIndex(roomData.getInt("weekendInterval")-1);
+	    		  p3.setVisible(false);
+	    		  p1.setVisible(true);
+	    	  }else if (roomData.getInt("measure")==1){
+	    		  options.setSelectedIndex(2);
+	    		  monthWeekBox.setSelectedIndex(roomData.getInt("weekNth")-1);
+	    		  dayBox.setSelectedIndex(roomData.getInt("day")-1);
+	    		  p3.setVisible(false);
+	    		  p2.setVisible(true);
+	    	  }
+	    	  
+	      }else {
+    		  options.setSelectedIndex(0);
+    	  }
+	      
+	      
+	    options.addActionListener(new ActionListener() {
+
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	         
+	         
+	         int index = options.getSelectedIndex();
+
+	         if(index == 0) {
+	            if(p3!=null) {
+	            p1.setVisible(false);
+	            p2.setVisible(false);
+	            }
+	            p3.setVisible(true);
+	         }
+	         else if(index==1) {
+	            if(p2 != null) {
+	               p2.setVisible(false);
+	               p3.setVisible(false);
+	            }
+	            p1.setVisible(true);
+	         }
+	         else if(index==2) {
+	         if(p1!=null) {
+	         p1.setVisible(false);
+	         p3.setVisible(false);
+	         }
+	         p2.setVisible(true);
+	         }
+	      }
+	       
+	    });
+	    add(options);
+	   
+	    
+	    
+//	    b1.setBounds(650,35,35,35);
+//	    b1.addActionListener(this);
+	//    
+	//    
+//	    b2.setBounds(690,35,35,35);
+//	    b3.setBounds(730,35,35,35);
+//	    add(b1);
+//	    add(b2);
+//	    add(b3);
+	    
+	    if (!roomData.isNull("resetDate")) {
+	    	
+	    	
+	    	
+	    	LocalDateTime dateTime = LocalDateTime.from(
+
+			        Instant.from(
+			            DateTimeFormatter.ISO_DATE_TIME.parse(roomData.getString("resetDate"))
+			        ).atZone(ZoneId.of("Asia/Seoul"))
+			    );
+			    String currentResetStr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
+	    	
+			    JLabel currentResetDate = new JLabel("현재 초기화 날짜 : " + currentResetStr);
+	    	
+	    	add(currentResetDate);
+	    	currentResetDate.setBounds(50,315,300,20);
+	    }
+	    
+	    if (!roomData.isNull("acceptDate")) {
+	    	
+	    	LocalDateTime dateTime = LocalDateTime.from(
+
+			        Instant.from(
+			            DateTimeFormatter.ISO_DATE_TIME.parse(roomData.getString("acceptDate"))
+			        ).atZone(ZoneId.of("Asia/Seoul"))
+			    );
+			    String currentAcceptStr = dateTime.format(DateTimeFormatter.ofPattern("yyyy년 M월 d일(E) HH시 mm분"));
+	    	
+	    	JLabel currentAcceptDate = new JLabel("현재 예약 시작 날짜 : " + currentAcceptStr);
+	    	add(currentAcceptDate);
+	    	currentAcceptDate.setBounds(50,340,300,20);
+	    }
+	    
+	    
+	      setLocationRelativeTo(null);
+	      setVisible(true);
+	      }
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	        RoomCreator rc = new RoomCreator();
+	         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
+	         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
+	         int[] colBlankArray = new int[colst.countTokens()];
+	         int[] rowBlankArray = new int[rowst.countTokens()];
+	         
+	         for (int i=0; i<colBlankArray.length; i++) {
+	            colBlankArray[i] = Integer.valueOf(colst.nextToken());
+	         }
+	         for (int i=0; i<rowBlankArray.length; i++) {
+	            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+	         }
+	         
+	         int roomNum = Integer.valueOf(roomNumField.getText());
+	         int col = Integer.valueOf(colField.getText());
+	         int row = Integer.valueOf(rowField.getText());
+	         
+	         
+	         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
+	         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
+	         rc.setRoomNum(roomNum);
+	         rc.setCol(col);
+	         rc.setRow(row);
+	         if (colBlank != null) {
+	            rc.setColBlank(colBlank);
+	         } else {
+	        	 rc.setColBlank(new int[0]);
+	         }
+	         if (rowBlank != null) {
+	            rc.setRowBlank(rowBlank);
+	         } else {
+	        	 rc.setRowBlank(new int[0]);
+	         }
+	         
+	         
+	         Date resetDate = (Date) datePicker.getModel().getValue();
+	         if (resetDate != null) {
+	            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
+	            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
+	            resetDate.setSeconds(0);
+	            rc.setResetDate(resetDate);
+	         } else {
+	        	 rc.setResetDate(null);
+	         }
+	         
+	         Date acceptDate = (Date) datePicker2.getModel().getValue();
+	         if (acceptDate != null) {
+	            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
+	            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
+	            acceptDate.setSeconds(0);
+	            rc.setAcceptDate(acceptDate);
+	         } else {
+	        	 rc.setResetDate(null);
+	         }
+	         
+	         boolean isShuffle = shuffle.isSelected();
+	         rc.setShuffle(isShuffle);
+	         int openDeffer;
+	         
+	         int measure = options.getSelectedIndex();
+	         if (measure == 1) {
+	            measure = 0;
+	            int weekendInterval = weekBox.getSelectedIndex()+1;
+	            rc.setMeasure(measure);
+	            rc.setWeekendInterval(weekendInterval);
+	            if (!weekDelayField.getText().equals("")) {
+			        openDeffer = Integer.valueOf(weekDelayField.getText());
+			        rc.setOpenDeffer(openDeffer);
+			     } else {
+			        rc.setOpenDeffer(0);
+			     }
+	         }else if (measure == 2) {
+	            measure = 1;
+	            int weekNth = monthWeekBox.getSelectedIndex()+1;
+	            int day = dayBox.getSelectedIndex();
+	            rc.setWeekNth(weekNth);
+	            rc.setMeasure(measure);
+	            rc.setDay(day);
+	            if (!monthResetDelayField.getText().equals("")) {
+	 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
+	 	           rc.setOpenDeffer(openDeffer);
+	 	         } else {
+	 	        	rc.setOpenDeffer(0);
+	 	         }
+	         }else if (measure == 0) {
+	        	 measure = -1;
+	        	 rc.setMeasure(measure);
+	         }
+	         
+	         
+	         
+	         
+	         
+	         System.out.println(hc.patchOneRoom(rc));
+	         seatsPanel.setVisible(false);
+	         addSeats(currentRoomNumber);
+	         dispose();
+	         
+	      }
+	      
+	   }
 	
 	class DeleteRoom extends JFrame implements ActionListener{
 	      
@@ -675,7 +1589,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	            JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
 //	            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    		loggedInPanel.setVisible(false);
-	    		deleteAdminBtn();
 	            refreshLoggedInPanel();
 	            dispose();
 	         }
@@ -684,169 +1597,47 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      
 	   }
 	
-	class ResetDate extends JFrame implements ActionListener{
-	      JButton reset;
-	      JButton realReset;
-	      JTextField[] fields;
-	      JXDatePicker picker;
-	      JPanel panel;
-//	      String[] fieldsName = {"roomNum", "year", "month", "date", "hour", "minute"};
+	class GrantAdmin extends JFrame implements ActionListener{
 	      
-	      JLabel[] labels;
-	      String[] labelsName = {"강의실 호수", "년", "월", "일", "시간","분"};
-	      
-	      public ResetDate(){
-	    	  picker = new JXDatePicker();
-	    	  panel = new JPanel();
-	    	  picker.setDate(Calendar.getInstance().getTime());
-	          picker.setFormats(new SimpleDateFormat("dd.MM.yyyy"));
-	          panel.add(picker);
-	         fields = new JTextField[labelsName.length];
-	         labels = new JLabel[labelsName.length];
-	          setSize(440,300);
-	          int a=0;
-	          int b=0;
-//	          for(int i = 0; i < labelsName.length; i++) {
-//	             fields[i] = new JTextField();
-//	             fields[i].setBounds(110, 15+a, 120, 25);
-//	             
-//	             labels[i] = new JLabel(labelsName[i]);
-//	             labels[i].setBounds(30+b, 15+a, 100, 25);
-//	             b = 50;
-//	             if(i == 4) labels[i].setBounds(70, 155, 100, 25); 
-//	             a = a+35;
-//	             fields[i].setToolTipText("숫자로만 입력하세요.");
-//	             add(fields[i]);
-//	             add(labels[i]);
-//	          }
-	            
-	            reset = new JButton("초기화 날짜 설정");
-	            reset.setBounds(270,235,130,20);
-	            reset.addActionListener(this);
-	            
-	            realReset = new JButton("설정 해제");
-	            realReset.setBounds(270,210,130,20);
-	            realReset.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println(hc.patchResetDateRoom(Integer.valueOf(fields[0].getText()), null));
-					}
-	            	
-	            });
-	            add(panel);
-	            add(reset);
-	            add(realReset);
-	            setLayout(null);
-	            setLocationRelativeTo(null);
-	            setVisible(true);
+	      public GrantAdmin() {
+	         setSize(320, 150);
+	         
+	         JLabel number = new JLabel("userId");
+	         number.setBounds(30,30,100,25);
+	         
+	         deleteNum = new JTextField();
+	         deleteNum.setToolTipText("관리자 권한을 부여할 유저 ID를 입력하세요.");
+	         deleteNum.setBounds(100,30,120,25);
+	         
+	         dBtn = new JButton("권한 부여");
+	         dBtn.setBounds(150,70,89,20);
+	         dBtn.addActionListener(this);
+	         
+	         
+	         add(number);
+	         add(deleteNum);
+	         add(dBtn);
+	         setLayout(null);
+	         setLocationRelativeTo(null);
+	         setVisible(true);
 	      }
+	      
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	         // TODO Auto-generated method stub
-//	         int i = 0;
-//	         while(i < 6){
-//	            if(fields[i].getText().equals("")) {
-//	               JOptionPane.showMessageDialog(null, labelsName[i] + "항목이 입력되지 않았습니다. 다시 입력해주세요.", "빈 항목", JOptionPane.WARNING_MESSAGE);
-//	               i++;
-//	            }else {
-//	               break;
-//	            }
-//	         }
-	         @SuppressWarnings("deprecation")
-	         int year = fields[1].getText() == "" ? 0 : Integer.valueOf(fields[1].getText())-1900;
-	         int month = fields[2].getText() == "" ? 0 : Integer.valueOf(fields[2].getText())-1;
-	         int day = fields[3].getText() == "" ? 0 : Integer.valueOf(fields[3].getText());
-	         int hour = fields[4].getText() == "" ? 0 : Integer.valueOf(fields[4].getText());
-	         int minute = fields[5].getText() == "" ? 0 : Integer.valueOf(fields[5].getText());
-	         Date date = new Date(year, month, day, hour, minute);
-	         System.out.println(hc.patchResetDateRoom(Integer.valueOf(fields[0].getText()), date));
-//	         Date date = new Date(122,11,10,12,12);
-//	         hc.patchResetDateRoom(11, date);
-	 		 loggedInPanel.setVisible(false);
-			 deleteAdminBtn();
-	         refreshLoggedInPanel();
-	         dispose();
+	         System.out.println(deleteNum.getText());
+	         if(deleteNum.getText().equals("")) {
+	            JOptionPane.showMessageDialog(null, "아이디를 입력하세요", "빈 내용", JOptionPane.WARNING_MESSAGE);
+	         }else {
+	            System.out.println(hc.patchGrantAdmin(deleteNum.getText()));
+	            JOptionPane.showMessageDialog(null, "해당 유저에게 권한이 부여되었습니다.", "완료", JOptionPane.PLAIN_MESSAGE);
+//	            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    		loggedInPanel.setVisible(false);
+	            refreshLoggedInPanel();
+	            dispose();
+	         }
+	         
 	      }
-	   }
-	
-	class AcceptDate extends JFrame implements ActionListener{
-	      JButton reset;
-	      JButton realReset;
-	      JTextField[] fields;
-//	      String[] fieldsName = {"roomNum", "year", "month", "date", "hour", "minute"};
 	      
-	      JLabel[] labels;
-	      String[] labelsName = {"강의실 호수", "년", "월", "일", "시간","분"};
-	      
-	      public AcceptDate(){
-	         fields = new JTextField[labelsName.length];
-	         labels = new JLabel[labelsName.length];
-	          setSize(440,300);
-	          int a=0;
-	          int b=0;
-	          for(int i = 0; i < labelsName.length; i++) {
-	             fields[i] = new JTextField();
-	             fields[i].setBounds(110, 15+a, 120, 25);
-	             
-	             labels[i] = new JLabel(labelsName[i]);
-	             labels[i].setBounds(30+b, 15+a, 100, 25);
-	             b = 50;
-	             if(i == 4) labels[i].setBounds(70, 155, 100, 25); 
-	             a = a+35;
-	             fields[i].setToolTipText("숫자로만 입력하세요.");
-	             add(fields[i]);
-	             add(labels[i]);
-	          }
-	            
-	            reset = new JButton("예약 시작시간 설정");
-	            reset.setBounds(270,235,130,20);
-	            reset.addActionListener(this);
-	            
-	            realReset = new JButton("설정 해제");
-	            realReset.setBounds(270,210,130,20);
-	            realReset.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println(hc.patchAcceptDateRoom(Integer.valueOf(fields[0].getText()), null));
-					}
-	            	
-	            });
-	            
-	            add(reset);
-	            add(realReset);
-	            setLayout(null);
-	            setLocationRelativeTo(null);
-	            setVisible(true);
-	      }
-	      @Override
-	      public void actionPerformed(ActionEvent e) {
-	         // TODO Auto-generated method stub
-//	         int i = 0;
-//	         while(i < 6){
-//	            if(fields[i].getText().equals("")) {
-//	               JOptionPane.showMessageDialog(null, labelsName[i] + "항목이 입력되지 않았습니다. 다시 입력해주세요.", "빈 항목", JOptionPane.WARNING_MESSAGE);
-//	               i++;
-//	            }else {
-//	               break;
-//	            }
-//	         }
-	         @SuppressWarnings("deprecation")
-	         int year = fields[1].getText() == "" ? 0 : Integer.valueOf(fields[1].getText())-1900;
-	         int month = fields[2].getText() == "" ? 0 : Integer.valueOf(fields[2].getText())-1;
-	         int day = fields[3].getText() == "" ? 0 : Integer.valueOf(fields[3].getText());
-	         int hour = fields[4].getText() == "" ? 0 : Integer.valueOf(fields[4].getText());
-	         int minute = fields[5].getText() == "" ? 0 : Integer.valueOf(fields[5].getText());
-	         Date date = new Date(year, month, day, hour, minute);
-	         System.out.println(hc.patchAcceptDateRoom(Integer.valueOf(fields[0].getText()), date));
-//	         Date date = new Date(122,11,10,12,12);
-//	         hc.patchResetDateRoom(11, date);
-	 		 loggedInPanel.setVisible(false);
-			 deleteAdminBtn();
-	         refreshLoggedInPanel();
-	         dispose();
-	      }
 	   }
 	
 	
@@ -901,9 +1692,12 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			reservedData[i] = Integer.valueOf((String) iter.next());
 		}
 		seatsPanel = new SeatsPanel(col, row, colbl, rowbl, roomNum, reservedData, hc);
-		seatsPanel.setVisible(true);
-		seatsPanel.setBounds(20, -46, 800, 500);
+//		seatsPanel.setVisible(true);
+		seatsPanel.setBounds(10, 50, 800, 400);
+		seatsPanel.setBackground(Color.white);
+		remove(roomPanelLabel);
 		add(seatsPanel);
+		add(roomPanelLabel);
 //		seatsPanel.setBackground(Color.gray.brighter());
 		
 		seatsPanel.setVisible(true);
@@ -928,18 +1722,16 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	public void deleteAdminBtn() {
+		aBtn.setVisible(false);
 		cRoom.setVisible(false);
 		dRoom.setVisible(false);
-		resetDate.setVisible(false);
-		aRoom.setVisible(false);
 	}
 	
 	public void addAdminBtn() {
 		if(hc.isAdmin()) {
+		aBtn.setVisible(true);
 		cRoom.setVisible(true);
 		dRoom.setVisible(true);
-		resetDate.setVisible(true);
-		aRoom.setVisible(true);
 		}
 	}
 	
@@ -971,7 +1763,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	//key events
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 			logInBtn.doClick();
 		}

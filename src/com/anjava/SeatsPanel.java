@@ -68,7 +68,7 @@ class SeatsPanel extends JPanel {
 	   int maxseat;
 	   int roomNum;
 	   
-	   static int myReservedSeat = 0;
+	   int myReservedSeat = 0;
 	   int[] otherReservedSeats;
 	   
 	   
@@ -95,9 +95,11 @@ class SeatsPanel extends JPanel {
 	      this.otherReservedSeats = otherReservedSeats;
 	      JSONArray reservedRooms = new JSONObject(hc.getUserDetail()).getJSONObject("data").getJSONArray("reservedRooms");
 	      for (int i=0; i<reservedRooms.length(); i++) {
-	    	  JSONObject obj;
-	    	  if ((obj = (JSONObject) reservedRooms.get(i)).getInt("roomNum") == roomNum) {
-	    		  SeatsPanel.myReservedSeat = obj.getInt("sitNum");
+	    	  JSONObject obj = (JSONObject) reservedRooms.get(i);
+	    	  if (!obj.isNull("roomNum")) {
+	    		  if (obj.getInt("roomNum") == roomNum) {
+	    			  myReservedSeat = obj.getInt("sitNum");
+	    		  }
 	    	  }
 	      }
 	      btn = new MyButton[maxseat];
@@ -134,6 +136,7 @@ class SeatsPanel extends JPanel {
 	            		btn[i*this.column+j].setEnabled(false);
 		                btn[i*this.column+j].setBackground(Color.white);
 		                btn[i*this.column+j].setBorder(null);
+		                
 	            	} else {
 	            		if (index == myReservedSeat) {
 	            			// 내가 예약한 자리 일 때
@@ -141,18 +144,21 @@ class SeatsPanel extends JPanel {
 			                btn[i*this.column+j].setBackground(Color.orange);
 		            		btn[i*this.column+j].setText(String.valueOf(index++));
 		            		btn[i*this.column+j].setStatus(1);
+		            		btn[i*this.column+j].setBorderPainted(false);
 	            		} else if (IntStream.of(otherReservedSeats).anyMatch(x -> x == iidx)) {
 	            			// 다른사람이 예약한 자리일 때
 	            			btn[i*this.column+j].setEnabled(true);
 			                btn[i*this.column+j].setBackground(Color.gray);
 		            		btn[i*this.column+j].setText(String.valueOf(index++));
 		            		btn[i*this.column+j].setStatus(2);
+		            		btn[i*this.column+j].setBorderPainted(false);
 	            		} else {
 	            			// 빈 자리일 때
 	            			btn[i*this.column+j].setEnabled(true);
 		            		btn[i*this.column+j].setText(String.valueOf(index++));
-			                btn[i*this.column+j].setBackground(Color.BLUE);
+			                btn[i*this.column+j].setBackground(new Color(255,170,170));
 			                btn[i*this.column+j].setStatus(0);
+			                btn[i*this.column+j].setBorderPainted(false);
 	            		}
 	            	}
 	            	btn[i*this.column+j].addActionListener(new ActionListener() {
@@ -170,7 +176,7 @@ class SeatsPanel extends JPanel {
 	             }
 	         }
 	         add(buttonPanel);
-	         buttonPanel.setBounds(30,100,700,400);
+	         buttonPanel.setBounds(10,0,760,400);
 	         repaint();     
 	   }
 	   
@@ -312,9 +318,9 @@ class SeatsPanel extends JPanel {
 	            }
 	         });
 	          
-	          
-	          add(lb);
 	          add(okButton);
+	          add(lb);
+	          
 	          
 	          setVisible(true);
 	         }

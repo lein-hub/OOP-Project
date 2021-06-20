@@ -298,35 +298,38 @@ public class HttpCaller {
 	
 	public String postCreateRoom(RoomCreator rc) {  // 방을 생성하는 요청
 		JSONObject jo = new JSONObject();
-		
-		jo.put("roomNum", rc.getRoomNum());
-
-		if (rc.getCol() != 99)
-		jo.put("column", rc.getCol());
-		if (rc.getRow() != 99)
-		jo.put("row", rc.getRow());
-		if (rc.getRowBlank() != null)
-			jo.put("rowBlankLine", rc.getRowBlank());
-		if (rc.getColBlank() != null)
-			jo.put("columnBlankLine", rc.getColBlank());
-		if (rc.getResetDate() != null)
-			jo.put("resetDate", rc.getResetDate());
-		if (rc.getAcceptDate() != null)
-			jo.put("acceptDate", rc.getAcceptDate());
-		if (rc.getMeasure() == 0) {
-			jo.put("measure", rc.getMeasure());
-			jo.put("weekendInterval", rc.getWeekendInterval());
-			jo.put("openDeffer", rc.getOpenDeffer());
-		}
-		if (rc.getMeasure() == 1) {
-			jo.put("measure", rc.getMeasure());
-			jo.put("day", rc.getDay());
-			jo.put("weekNth", rc.getWeekNth());
-			jo.put("openDeffer", rc.getOpenDeffer());
-		}
-		jo.put("isShuffle", rc.isShuffle());
-		System.out.println(jo.toString());
-		return this.request("POST", url+"room/", jo.toString());
+	      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+	      
+	      
+	      if (rc.getRoomNum() != 99999)
+	      jo.put("roomNum", rc.getRoomNum());
+	      if (rc.getCol() != 99)
+	      jo.put("column", rc.getCol());
+	      if (rc.getRow() != 99)
+	      jo.put("row", rc.getRow());
+	      if (rc.getRowBlank() != null)
+	         jo.put("rowBlankLine", rc.getRowBlank());
+	      if (rc.getColBlank() != null)
+	         jo.put("columnBlankLine", rc.getColBlank());
+	      if (rc.getResetDate() != null)
+	         jo.put("resetDate", df.format(rc.getResetDate()));
+	      if (rc.getAcceptDate() != null)
+	         jo.put("acceptDate", df.format(rc.getAcceptDate()));
+	      if (rc.getMeasure() == 0) {
+	         jo.put("measure", rc.getMeasure());
+	         jo.put("weekendInterval", rc.getWeekendInterval());
+	      }
+	      if (rc.getMeasure() == 1) {
+	         jo.put("measure", rc.getMeasure());
+	         jo.put("day", rc.getDay());
+	         jo.put("weekNth", rc.getWeekNth());
+	      }
+	      if (rc.getOpenDeffer() != 9999)
+	      jo.put("openDeffer", rc.getOpenDeffer());
+	      
+	      jo.put("isShuffle", rc.isShuffle());
+	      System.out.println(jo.toString());
+	      return this.request("POST", url+"room/", jo.toString());
 	}
 	/**
 	 * 새로운 Room을 만듭니다.<br>
@@ -395,6 +398,7 @@ public class HttpCaller {
 	
 	public String patchOneRoom(RoomCreator rc) {
 		JSONObject jo = new JSONObject();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		if (rc.getCol() != 99)
 			jo.put("column", rc.getCol());
 		if (rc.getRow() != 99)
@@ -403,21 +407,25 @@ public class HttpCaller {
 			jo.put("rowBlankLine", rc.getRowBlank());
 		if (rc.getColBlank() != null)
 			jo.put("columnBlankLine", rc.getColBlank());
-		if (rc.getResetDate() != null)
-			jo.put("resetDate", rc.getResetDate());
-		if (rc.getAcceptDate() != null)
-			jo.put("acceptDate", rc.getAcceptDate());
+		
+		jo.put("resetDate", df.format(rc.getResetDate()));
+		jo.put("acceptDate", df.format(rc.getAcceptDate()));
+		
 		if (rc.getMeasure() == 0) {
 			jo.put("measure", rc.getMeasure());
 			jo.put("weekendInterval", rc.getWeekendInterval());
-			jo.put("openDeffer", rc.getOpenDeffer());
 		}
 		if (rc.getMeasure() == 1) {
 			jo.put("measure", rc.getMeasure());
 			jo.put("day", rc.getDay());
 			jo.put("weekNth", rc.getWeekNth());
-			jo.put("openDeffer", rc.getOpenDeffer());
 		}
+		if (rc.getMeasure() == -1) {
+			jo.put("measure", rc.getMeasure());
+		}
+	    if (rc.getOpenDeffer() != 9999) {
+	    	jo.put("openDeffer", rc.getOpenDeffer());
+	    }
 		jo.put("isShuffle", rc.isShuffle());
 
 		return this.request("PATCH", url+"room/"+rc.getRoomNum(), jo.toString());
@@ -527,6 +535,14 @@ public class HttpCaller {
 	public String deleteRoom(int roomNum) {
 		
 		return this.request("DELETE", url+"room/"+roomNum, null);
+	}
+	
+	
+	public String patchGrantAdmin(String userId) {
+		JSONObject jo = new JSONObject();
+		
+		jo.put("userId", userId);
+		return this.request("PATCH", url+"users/grantAdmin", jo.toString());
 	}
 	/**
 	 * 현재 이 객체에서 저장하고 있는 사용자 정보를 전부 삭제합니다.

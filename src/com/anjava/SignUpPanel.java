@@ -1,6 +1,7 @@
 package com.anjava;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import java.awt.*;
@@ -17,17 +18,28 @@ public class SignUpPanel extends JPanel{
 		for(int i = 0; i < categories.length; i++) {			
 			//패스워드필드 설정
 			if(i == 2 || i ==3) {
-				pwdFields[i-2] = new JPasswordField(i);
+				pwdFields[i-2] = new JPasswordField();
+				pwdFields[i-2].setBorder(null);
 				pwdFields[i-2].setToolTipText(categories[i]);
+				pwdFields[i-2].setBackground(new Color(255, 255, 255));
+				pwdFields[i-2].setForeground(new Color(125, 124, 130));
+				pwdFields[i-2].setFont(new Font("SAN SERIF", Font.PLAIN, 18));				
 				this.add(pwdFields[i-2]);
 			}else {
-			fields[i] = new JTextField(15);
-			fields[i].setToolTipText(categories[i]);
+			fields[i] = new JTextField(15){
+				@Override 
+				public void setBorder(Border border) {		
+				}
+			};
+			fields[i].setBackground(new Color(255,255,255));
+			fields[i].setForeground(new Color(125, 124, 130));
+			fields[i].setFont(new Font("SAN SERIF", Font.PLAIN, 18));
 			this.add(fields[i]);
 			}
 		}
 
-		this.setBounds(350,130,200,200);
+		this.setBounds(570,70,200,320);
+		this.setBackground(new Color(255,255,255));
 		this.setLayout(new GridLayout(6,0,10,10));
 	}
 
