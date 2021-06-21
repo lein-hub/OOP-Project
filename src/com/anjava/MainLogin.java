@@ -37,7 +37,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	AntialiasedLabel mainLogLabel, signUpPanelLabel;
 	JTextField ID, col, row, roomNum, colBlank, rowBlank, deleteNum, roomNumField, colField, rowField, colBlankField, rowBlankField;
 	JPasswordField PASSWORD;;
-	JButton aBtn, logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, makeRoomBtn, dBtn,editBtn, refresh ,sprefresh, outBtn;
+	JButton aBtn, logInBtn, signUpBtn, backBtn2, signUpBtn2, exitButton, backBtn, mainBtn, logOutBtn, cRoom, dRoom, makeRoomBtn, dBtn,editBtn, refresh ,sprefresh, outBtn, outRoomStBtn;
 	LoggedInPanel loggedInPanel;
 	Font Title = new Font(null);
 	ImageIcon icon;
@@ -81,14 +81,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		pwdLabel = new JLabel("");
 		pwdLabel.setBounds(38,45,135,20);
 		
-		//SelectHint Label
-		selectHintLabel = new AntialiasedLabel("");
-	    selectHintLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/SelectHintLabel.jpg")));
-	    selectHintLabel.setLayout(null);
-	    selectHintLabel.setBounds(0,468,350,22);
-	    selectHintLabel.setVisible(false);
-	    add(selectHintLabel);
-		
 		 //welcome Label
 		welcome = new JLabel();
 		welcome.setBounds(10,-130,300,300);
@@ -118,9 +110,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		 //ID
 		ID = new JTextField(15);
 		ID.setBorder(null);
-		ID.setBounds(70,40,250,40);
+		ID.setBounds(70,35,250,40);
 		ID.addKeyListener(this);
-		ID.setText("test6");
 		ID.setFont(new Font("SAN SERIF", Font.PLAIN, 25));
 		ID.setForeground(new Color(125,124,130));
 
@@ -129,7 +120,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		PASSWORD.setBorder(null);
 		PASSWORD.setBounds(70,108,250,40);
 		PASSWORD.addKeyListener(this);
-		PASSWORD.setText("12341234");
 		PASSWORD.setFont(new Font("SAN SERIF", Font.PLAIN, 25));
 		PASSWORD.setForeground(new Color(125,124,130));
 		
@@ -258,7 +248,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	         @Override
 	         public void actionPerformed(ActionEvent e) {
 	        	 loggedInPanel.setVisible(false);
+	        	 remove(roomHintLabel);
 	        	 refreshLoggedInPanel();
+	        	 
 	         }
 	         
 	      });
@@ -282,7 +274,9 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				seatsPanel.setVisible(false);
+				remove(selectHintLabel);
 				addSeats(currentRoomNumber);
+				
 			}
 	    	  
 	      });
@@ -300,6 +294,14 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+//				remove(sprefresh);
+//				remove(editBtn);
+//				remove(roomHintLabel);
+//				remove(selectHintLabel);
+				editBtn.setVisible(false);
+				roomHintLabel.setVisible(false);
+				if (selectHintLabel != null)
+				selectHintLabel.setVisible(false);
 				deleteLoggedInPanel();
 				hc.clearData();
 				if (seatsPanel != null) deleteSeats();
@@ -307,19 +309,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 				welcome.setVisible(false);
 				if(cRoomPanel != null)
 				cRoomPanel.setVisible(false);
+				sprefresh.setVisible(false);
 				refresh.setVisible(false);
 				addMainLogIn();
-				editBtn.setVisible(false);
-				sprefresh.setVisible(false);
-				roomPanelLabel.setVisible(false);
-				if(selectHintLabel!=null)
-					selectHintLabel.setVisible(false);
-					if(roomHintLabel!=null)
-						roomHintLabel.setVisible(false);
-					sprefresh.setVisible(false);
-					if(editBtn!=null)
-					editBtn.setVisible(false);
-				//				remove(roomPanelLabel);
+				remove(roomPanelLabel);
+				
 				
 			}
 			
@@ -423,6 +417,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	        	
 	        	@Override
         		public void actionPerformed(ActionEvent e) {
+	        		
+	        		
         			JSONObject roomData = new JSONObject(hc.getOneRoom(currentRoomNumber)).getJSONObject("data").getJSONObject("roomData");
         			new UpdateRoom(currentRoomNumber, roomData);
         			
@@ -456,13 +452,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		
 		//메인 화면에서 회원가입 버튼 눌렀을 때
 		if(e.getSource()==signUpBtn) {
-			if(selectHintLabel!=null)
-			selectHintLabel.setVisible(false);
-			if(roomHintLabel!=null)
-				roomHintLabel.setVisible(false);
-			sprefresh.setVisible(false);
-			if(editBtn!=null)
-			editBtn.setVisible(false);
+			
 			
 			signUpBtnPanel = new JPanel();
 			signUpPanelLabel = new AntialiasedLabel("");
@@ -475,12 +465,19 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			
 			
 			//회원가입창의 버튼
+			
 			signUpBtn2 = new JButton("회원가입");
 			backBtn = new JButton("뒤로가기");
 			
-			signUpBtn2.setBackground(Color.gray);
+			
+			
+			signUpBtn2.setBackground(Color.LIGHT_GRAY);
 			signUpBtn2.setBorderPainted(false);
+			signUpBtn2.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+			backBtn.setBackground(new Color(135,77,162));
 			backBtn.setBorderPainted(false);
+			backBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+			backBtn.setForeground(Color.white);
 			
 			signUpBtnPanel.setBounds(515,420,180,35);
 			signUpBtnPanel.setBackground(Color.white);
@@ -490,12 +487,10 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 			
 			signUpPanel.setBackground(new Color(255,255,255,0));
 			signUpMainPanel.setBounds(350,550,300,200);
-
-
 			
-			signUpPanel.add(signUpMainPanel);		
-			signUpBtnPanel.add(backBtn);
+			signUpPanel.add(signUpMainPanel);			
 			signUpBtnPanel.add(signUpBtn2);
+			signUpBtnPanel.add(backBtn);
 			signUpBtnPanel.add(signUpMainPanel);
 
 			
@@ -568,6 +563,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 						if (hc.isAdmin()) {
 							editBtn.setVisible(true);
 						}
+//						sprefresh.setVisible(true);
 						loggedInPanel.setVisible(false);
 						addSeats(roomNum);
 						deleteAdminBtn();
@@ -584,7 +580,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							JOptionPane.showMessageDialog(null, "아직 예약할 수 없습니다.", "Message", JOptionPane.ERROR_MESSAGE);
-							
+							sprefresh.setVisible(true);
 						}
 						
 					});
@@ -701,7 +697,6 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	       
 	       
 	      public CreateRoom() {
-	      setResizable(false);
 	      setTitle("강의실 예약하기");
 	      setSize(900,450);
 	      setLayout(null);
@@ -751,9 +746,19 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      add(rowBlankField);
 	      
 	      makeRoomBtn = new JButton("방만들기");
+	      makeRoomBtn.setBackground(Color.LIGHT_GRAY);
+	      makeRoomBtn.setBorderPainted(false);
 	      makeRoomBtn.addActionListener(this);
 	      makeRoomBtn.setBounds(180,265,85,25);
 	      add(makeRoomBtn);
+	      
+	      outRoomStBtn = new JButton("취소");
+	      outRoomStBtn.setBackground(Color.LIGHT_GRAY);
+	      outRoomStBtn.setBorderPainted(false);
+	      outRoomStBtn.addActionListener(this);
+	      outRoomStBtn.setBounds(60,265,85,25);
+	      add(outRoomStBtn);
+	      
 //	         
 //	         cRoomPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 //	         cRoomPanel.setLayout(new GridLayout(4,2,15,15));
@@ -822,6 +827,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 
 	    //shuffle checkBox
 	    shuffle = new JCheckBox("  리셋 시 셔플");
+	    shuffle.setFont(new Font("HY견고딕", Font.PLAIN, 11));
 	    shuffle.setBounds(445,300,100,20);
 	    shuffle.setHorizontalTextPosition(SwingConstants.RIGHT);
 	    add(shuffle);
@@ -975,93 +981,119 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 //	    add(b1);
 //	    add(b2);
 //	    add(b3);
+		addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			    xDrag = e.getX();
+			    yDrag = e.getY();
+			    JFrame sFrame = (JFrame) e.getSource();
+			    sFrame.setLocation(sFrame.getLocation().x+xDrag-xPress, 
+			    sFrame.getLocation().y+yDrag-yPress);
+			 }
+			 @Override
+			 public void mouseMoved(MouseEvent e) {
+			     xPress = e.getX();
+			     yPress = e.getY();
+			  }
+			
+		});
 	      setLocationRelativeTo(null);
+	      setUndecorated(true);
 	      setVisible(true);
 	      }
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        RoomCreator rc = new RoomCreator();
-	         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
-	         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
-	         int[] colBlankArray = new int[colst.countTokens()];
-	         int[] rowBlankArray = new int[rowst.countTokens()];
-	         
-	         for (int i=0; i<colBlankArray.length; i++) {
-	            colBlankArray[i] = Integer.valueOf(colst.nextToken());
-	         }
-	         for (int i=0; i<rowBlankArray.length; i++) {
-	            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
-	         }
-	         
-	         int roomNum = Integer.valueOf(roomNumField.getText());
-	         int col = Integer.valueOf(colField.getText());
-	         int row = Integer.valueOf(rowField.getText());
-	         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
-	         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
-	         rc.setRoomNum(roomNum);
-	         rc.setCol(col);
-	         rc.setRow(row);
-	         if (colBlank != null) {
-	            rc.setColBlank(colBlank);
-	         }
-	         if (rowBlank != null) {
-	            rc.setRowBlank(rowBlank);
-	         }
-	         
-	         
-	         Date resetDate = (Date) datePicker.getModel().getValue();
-	         if (resetDate != null) {
-	            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
-	            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
-	            resetDate.setSeconds(0);
-	            rc.setResetDate(resetDate);
-	         }
-	         
-	         Date acceptDate = (Date) datePicker2.getModel().getValue();
-	         if (acceptDate != null) {
-	            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
-	            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
-	            acceptDate.setSeconds(0);
-	            rc.setAcceptDate(acceptDate);
-	         }
-	         
-	         boolean isShuffle = shuffle.isSelected();
-	         rc.setShuffle(isShuffle);
-	         int openDeffer;
-	         
-	         int measure = options.getSelectedIndex();
-	         if (measure == 1) {
-	            measure = 0;
-	            int weekendInterval = weekBox.getSelectedIndex()+1;
-	            rc.setMeasure(measure);
-	            rc.setWeekendInterval(weekendInterval);
-	            if (!weekDelayField.getText().equals("")) {
-			        openDeffer = Integer.valueOf(weekDelayField.getText());
-			        rc.setOpenDeffer(openDeffer);
-			     } else {
-			        rc.setOpenDeffer(0);
-			     }
-	         }else if (measure == 2) {
-	            measure = 1;
-	            int weekNth = monthWeekBox.getSelectedIndex()+1;
-	            int day = dayBox.getSelectedIndex();
-	            rc.setWeekNth(weekNth);
-	            rc.setMeasure(measure);
-	            rc.setDay(day);
-	            if (!monthResetDelayField.getText().equals("")) {
-	 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
-	 	           rc.setOpenDeffer(openDeffer);
-	 	         } else {
-	 	        	rc.setOpenDeffer(0);
-	 	         }
-	         }
-	         
-	         System.out.println(hc.postCreateRoom(rc));
-	         loggedInPanel.setVisible(false);
-        	 refreshLoggedInPanel();
-	         dispose();
-	         
-	      }
+	    	  
+	    	  if (e.getSource() == outRoomStBtn) {
+	    		  dispose();
+	    	  } else {
+		    	  
+	  	        RoomCreator rc = new RoomCreator();
+	  	         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
+	  	         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
+	  	         int[] colBlankArray = new int[colst.countTokens()];
+	  	         int[] rowBlankArray = new int[rowst.countTokens()];
+	  	         
+	  	         for (int i=0; i<colBlankArray.length; i++) {
+	  	            colBlankArray[i] = Integer.valueOf(colst.nextToken());
+	  	         }
+	  	         for (int i=0; i<rowBlankArray.length; i++) {
+	  	            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+	  	         }
+	  	         
+	  	         int roomNum = Integer.valueOf(roomNumField.getText());
+	  	         int col = Integer.valueOf(colField.getText());
+	  	         int row = Integer.valueOf(rowField.getText());
+	  	         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
+	  	         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
+	  	         rc.setRoomNum(roomNum);
+	  	         rc.setCol(col);
+	  	         rc.setRow(row);
+	  	         if (colBlank != null) {
+	  	            rc.setColBlank(colBlank);
+	  	         }
+	  	         if (rowBlank != null) {
+	  	            rc.setRowBlank(rowBlank);
+	  	         }
+	  	         
+	  	         
+	  	         Date resetDate = (Date) datePicker.getModel().getValue();
+	  	         if (resetDate != null) {
+	  	            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
+	  	            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
+	  	            resetDate.setSeconds(0);
+	  	            rc.setResetDate(resetDate);
+	  	         }
+	  	         
+	  	         Date acceptDate = (Date) datePicker2.getModel().getValue();
+	  	         if (acceptDate != null) {
+	  	            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
+	  	            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
+	  	            acceptDate.setSeconds(0);
+	  	            rc.setAcceptDate(acceptDate);
+	  	         }
+	  	         
+	  	         boolean isShuffle = shuffle.isSelected();
+	  	         rc.setShuffle(isShuffle);
+	  	         int openDeffer;
+	  	         
+	  	         int measure = options.getSelectedIndex();
+	  	         if (measure == 1) {
+	  	            measure = 0;
+	  	            int weekendInterval = weekBox.getSelectedIndex()+1;
+	  	            rc.setMeasure(measure);
+	  	            rc.setWeekendInterval(weekendInterval);
+	  	            if (!weekDelayField.getText().equals("")) {
+	  			        openDeffer = Integer.valueOf(weekDelayField.getText());
+	  			        rc.setOpenDeffer(openDeffer);
+	  			     } else {
+	  			        rc.setOpenDeffer(0);
+	  			     }
+	  	         }else if (measure == 2) {
+	  	            measure = 1;
+	  	            int weekNth = monthWeekBox.getSelectedIndex()+1;
+	  	            int day = dayBox.getSelectedIndex();
+	  	            rc.setWeekNth(weekNth);
+	  	            rc.setMeasure(measure);
+	  	            rc.setDay(day);
+	  	            if (!monthResetDelayField.getText().equals("")) {
+	  	 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
+	  	 	           rc.setOpenDeffer(openDeffer);
+	  	 	         } else {
+	  	 	        	rc.setOpenDeffer(0);
+	  	 	         }
+	  	         }
+	  	         
+	  	         System.out.println(hc.postCreateRoom(rc));
+	  	         loggedInPanel.setVisible(false);
+	          	 refreshLoggedInPanel();
+	  	         dispose();
+	  	         
+	  	      }
+	    	  }
+	    	  
+
 	      
 	   }
 	
@@ -1185,9 +1217,18 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      add(rowBlankField);
 	     
 	      makeRoomBtn = new JButton("설정변경");
+	      makeRoomBtn.setBackground(Color.LIGHT_GRAY);
+	      makeRoomBtn.setBorderPainted(false);
 	      makeRoomBtn.addActionListener(this);
 	      makeRoomBtn.setBounds(180,265,85,25);
 	      add(makeRoomBtn);
+	      
+	      outRoomStBtn = new JButton("취소");
+	      outRoomStBtn.setBackground(Color.LIGHT_GRAY);
+	      outRoomStBtn.setBorderPainted(false);
+	      outRoomStBtn.addActionListener(this);
+	      outRoomStBtn.setBounds(60,265,85,25);
+	      add(outRoomStBtn);
 	     
 	      
 //	         
@@ -1203,6 +1244,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	   
 
 	    JLabel selectDate = new JLabel("좌석초기화 날짜 선택");
+	    selectDate.setFont(new Font("HY견고딕", Font.PLAIN, 12));
 	    selectDate.setBounds(380,4,140,30);
 	    add(selectDate);
 	     
@@ -1331,7 +1373,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      
 	      JLabel monthResetDelay = new JLabel("오픈지연(분)");
 	      monthResetDelay.setBounds(60,105,80,20);
-	      monthWeekBox = new JComboBox<>();
+	      monthWeekBox = new JComboBox<>();	      
+
 	      for(int i = 1; i <5 ; i++) monthWeekBox.addItem(String.valueOf(i));
 	      monthWeekBox.setRenderer(right);
 	      monthWeekBox.setBounds(70,27,80,20);
@@ -1340,6 +1383,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	      
 	      dayBox = new JComboBox<>();
 	      String[] days = {"일","월","화","수","목","금","토"};
+
 	      for(int i = 0; i < 7; i++) {         
 	         dayBox.addItem(days[i]);
 	      }
@@ -1479,244 +1523,265 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	    	currentAcceptDate.setBounds(50,340,300,20);
 	    }
 	    
-	    
+		addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			    xDrag = e.getX();
+			    yDrag = e.getY();
+			    JFrame sFrame = (JFrame) e.getSource();
+			    sFrame.setLocation(sFrame.getLocation().x+xDrag-xPress, 
+			    sFrame.getLocation().y+yDrag-yPress);
+			 }
+			 @Override
+			 public void mouseMoved(MouseEvent e) {
+			     xPress = e.getX();
+			     yPress = e.getY();
+			  }
+			
+		});
 	      setLocationRelativeTo(null);
+	      setUndecorated(true);
 	      setVisible(true);
 	      }
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
-	        RoomCreator rc = new RoomCreator();
-	         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
-	         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
-	         int[] colBlankArray = new int[colst.countTokens()];
-	         int[] rowBlankArray = new int[rowst.countTokens()];
+	    	  
+	    	 if (e.getSource() == outRoomStBtn) {
+	    		 dispose();
+	    	 } else {
+	 	        RoomCreator rc = new RoomCreator();
+		         StringTokenizer colst = new StringTokenizer(colBlankField.getText(), ", ");
+		         StringTokenizer rowst = new StringTokenizer(rowBlankField.getText(), ", ");
+		         int[] colBlankArray = new int[colst.countTokens()];
+		         int[] rowBlankArray = new int[rowst.countTokens()];
+		         
+		         for (int i=0; i<colBlankArray.length; i++) {
+		            colBlankArray[i] = Integer.valueOf(colst.nextToken());
+		         }
+		         for (int i=0; i<rowBlankArray.length; i++) {
+		            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+		         }
+		         
+		         int roomNum = Integer.valueOf(roomNumField.getText());
+		         int col = Integer.valueOf(colField.getText());
+		         int row = Integer.valueOf(rowField.getText());
+		         
+		         
+		         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
+		         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
+		         rc.setRoomNum(roomNum);
+		         rc.setCol(col);
+		         rc.setRow(row);
+		         if (colBlank != null) {
+		            rc.setColBlank(colBlank);
+		         } else {
+		        	 rc.setColBlank(new int[0]);
+		         }
+		         if (rowBlank != null) {
+		            rc.setRowBlank(rowBlank);
+		         } else {
+		        	 rc.setRowBlank(new int[0]);
+		         }
+		         
+		         
+		         Date resetDate = (Date) datePicker.getModel().getValue();
+		         if (resetDate != null) {
+		            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
+		            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
+		            resetDate.setSeconds(0);
+		            rc.setResetDate(resetDate);
+		         } else {
+		        	 rc.setResetDate(null);
+		         }
+		         
+		         Date acceptDate = (Date) datePicker2.getModel().getValue();
+		         if (acceptDate != null) {
+		            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
+		            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
+		            acceptDate.setSeconds(0);
+		            rc.setAcceptDate(acceptDate);
+		         } else {
+		        	 rc.setResetDate(null);
+		         }
+		         
+		         boolean isShuffle = shuffle.isSelected();
+		         rc.setShuffle(isShuffle);
+		         int openDeffer;
+		         
+		         int measure = options.getSelectedIndex();
+		         if (measure == 1) {
+		            measure = 0;
+		            int weekendInterval = weekBox.getSelectedIndex()+1;
+		            rc.setMeasure(measure);
+		            rc.setWeekendInterval(weekendInterval);
+		            if (!weekDelayField.getText().equals("")) {
+				        openDeffer = Integer.valueOf(weekDelayField.getText());
+				        rc.setOpenDeffer(openDeffer);
+				     } else {
+				        rc.setOpenDeffer(0);
+				     }
+		         }else if (measure == 2) {
+		            measure = 1;
+		            int weekNth = monthWeekBox.getSelectedIndex()+1;
+		            int day = dayBox.getSelectedIndex();
+		            rc.setWeekNth(weekNth);
+		            rc.setMeasure(measure);
+		            rc.setDay(day);
+		            if (!monthResetDelayField.getText().equals("")) {
+		 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
+		 	           rc.setOpenDeffer(openDeffer);
+		 	         } else {
+		 	        	rc.setOpenDeffer(0);
+		 	         }
+		         }else if (measure == 0) {
+		        	 measure = -1;
+		        	 rc.setMeasure(measure);
+		         }
+		         
+		         
+		         
+		         
+		         
+		         System.out.println(hc.patchOneRoom(rc));
+		         seatsPanel.setVisible(false);
+		         addSeats(currentRoomNumber);
+		         dispose();
+		         
+		      }
+	    	 }
+
+	      
+	   }
+	
+	class DeleteRoom extends JFrame implements ActionListener{
+	      
+	      public DeleteRoom() {
+	         setSize(320, 150);
 	         
-	         for (int i=0; i<colBlankArray.length; i++) {
-	            colBlankArray[i] = Integer.valueOf(colst.nextToken());
+	         JLabel number = new JLabel("강의실 호수");
+	         number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         number.setBounds(30,50,100,25);
+	         
+	         deleteNum = new JTextField();
+	         deleteNum.setToolTipText("숫자로만 입력하세요.");
+	         deleteNum.setBounds(100,50,190,25);
+	         
+	         dBtn = new JButton("방 지우기");
+	         dBtn.setBounds(40,100,100,20);
+	         dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         dBtn.setForeground(Color.BLACK);
+	         dBtn.setBackground(Color.LIGHT_GRAY);
+	         dBtn.addActionListener(this);
+	         dBtn.setBorderPainted(false);
+	         
+	         outBtn = new JButton("취소");
+	         outBtn.setBounds(180,100,100,20);
+	         outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         outBtn.setForeground(Color.BLACK);
+	         outBtn.setBackground(Color.LIGHT_GRAY);
+	         outBtn.addActionListener(this);
+	         outBtn.setBorderPainted(false);
+	         
+	         
+	         add(number);
+	         add(deleteNum);
+	         add(dBtn);
+	         add(outBtn);
+	         setLayout(null);
+	         setLocationRelativeTo(null);
+	         setUndecorated(true);
+	         setVisible(true);
+	      }
+	      
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	         System.out.println(deleteNum.getText());
+	         if (e.getSource() == outBtn) {
+	        	 dispose();
 	         }
-	         for (int i=0; i<rowBlankArray.length; i++) {
-	            rowBlankArray[i] = Integer.valueOf(rowst.nextToken());
+	         if (e.getSource() ==dBtn) {
+		         if(deleteNum.getText().equals("")) {
+			            JOptionPane.showMessageDialog(null, "호수를 입력하세요.", "빈 내용", JOptionPane.WARNING_MESSAGE);
+			         }else {
+			            hc.deleteRoom(Integer.valueOf(deleteNum.getText()));
+			            JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
+//			            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			    		loggedInPanel.setVisible(false);
+			            refreshLoggedInPanel();
+			            dispose();
+			         } 
 	         }
-	         
-	         int roomNum = Integer.valueOf(roomNumField.getText());
-	         int col = Integer.valueOf(colField.getText());
-	         int row = Integer.valueOf(rowField.getText());
-	         
-	         
-	         int[] colBlank = colBlankArray.length == 0 ? null : colBlankArray;
-	         int[] rowBlank = rowBlankArray.length == 0 ? null : rowBlankArray;
-	         rc.setRoomNum(roomNum);
-	         rc.setCol(col);
-	         rc.setRow(row);
-	         if (colBlank != null) {
-	            rc.setColBlank(colBlank);
-	         } else {
-	        	 rc.setColBlank(new int[0]);
-	         }
-	         if (rowBlank != null) {
-	            rc.setRowBlank(rowBlank);
-	         } else {
-	        	 rc.setRowBlank(new int[0]);
-	         }
-	         
-	         
-	         Date resetDate = (Date) datePicker.getModel().getValue();
-	         if (resetDate != null) {
-	            resetDate.setHours(Integer.valueOf((String) resetHour.getSelectedItem() == "" ? "0" : (String) resetHour.getSelectedItem()));
-	            resetDate.setMinutes(Integer.valueOf((String) resetMinute.getSelectedItem() == "" ? "0" : (String) resetMinute.getSelectedItem()));
-	            resetDate.setSeconds(0);
-	            rc.setResetDate(resetDate);
-	         } else {
-	        	 rc.setResetDate(null);
-	         }
-	         
-	         Date acceptDate = (Date) datePicker2.getModel().getValue();
-	         if (acceptDate != null) {
-	            acceptDate.setHours(Integer.valueOf((String)startHour.getSelectedItem() == "" ? "0" : (String)startHour.getSelectedItem()));
-	            acceptDate.setMinutes(Integer.valueOf((String) startMinute.getSelectedItem() == "" ? "0" : (String) startMinute.getSelectedItem()));
-	            acceptDate.setSeconds(0);
-	            rc.setAcceptDate(acceptDate);
-	         } else {
-	        	 rc.setResetDate(null);
-	         }
-	         
-	         boolean isShuffle = shuffle.isSelected();
-	         rc.setShuffle(isShuffle);
-	         int openDeffer;
-	         
-	         int measure = options.getSelectedIndex();
-	         if (measure == 1) {
-	            measure = 0;
-	            int weekendInterval = weekBox.getSelectedIndex()+1;
-	            rc.setMeasure(measure);
-	            rc.setWeekendInterval(weekendInterval);
-	            if (!weekDelayField.getText().equals("")) {
-			        openDeffer = Integer.valueOf(weekDelayField.getText());
-			        rc.setOpenDeffer(openDeffer);
-			     } else {
-			        rc.setOpenDeffer(0);
-			     }
-	         }else if (measure == 2) {
-	            measure = 1;
-	            int weekNth = monthWeekBox.getSelectedIndex()+1;
-	            int day = dayBox.getSelectedIndex();
-	            rc.setWeekNth(weekNth);
-	            rc.setMeasure(measure);
-	            rc.setDay(day);
-	            if (!monthResetDelayField.getText().equals("")) {
-	 	           openDeffer = Integer.valueOf(monthResetDelayField.getText());
-	 	           rc.setOpenDeffer(openDeffer);
-	 	         } else {
-	 	        	rc.setOpenDeffer(0);
-	 	         }
-	         }else if (measure == 0) {
-	        	 measure = -1;
-	        	 rc.setMeasure(measure);
-	         }
-	         
-	         
-	         
-	         
-	         
-	         System.out.println(hc.patchOneRoom(rc));
-	         seatsPanel.setVisible(false);
-	         addSeats(currentRoomNumber);
-	         dispose();
+
 	         
 	      }
 	      
 	   }
 	
-	class DeleteRoom extends JFrame implements ActionListener{
-        
-        public DeleteRoom() {
-           setSize(320, 150);
-           
-           JLabel number = new JLabel("강의실 호수");
-           number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           number.setBounds(30,50,100,25);
-           
-           deleteNum = new JTextField();
-           deleteNum.setToolTipText("숫자로만 입력하세요.");
-           deleteNum.setBounds(100,50,190,25);
-           
-           dBtn = new JButton("방 지우기");
-           dBtn.setBounds(40,100,100,20);
-           dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           dBtn.setForeground(Color.BLACK);
-           dBtn.setBackground(Color.LIGHT_GRAY);
-           dBtn.addActionListener(this);
-           dBtn.setBorderPainted(false);
-           
-           outBtn = new JButton("취소");
-           outBtn.setBounds(180,100,100,20);
-           outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           outBtn.setForeground(Color.BLACK);
-           outBtn.setBackground(Color.LIGHT_GRAY);
-           outBtn.addActionListener(this);
-           outBtn.setBorderPainted(false);
-           
-           
-           add(number);
-           add(deleteNum);
-           add(dBtn);
-           add(outBtn);
-           setLayout(null);
-           setLocationRelativeTo(null);
-           setUndecorated(true);
-           setVisible(true);
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-           System.out.println(deleteNum.getText());
-           if (e.getSource() == outBtn) {
-              dispose();
-           }
-           if (e.getSource() ==dBtn) {
-              if(deleteNum.getText().equals("")) {
-                    JOptionPane.showMessageDialog(null, "호수를 입력하세요.", "빈 내용", JOptionPane.WARNING_MESSAGE);
-                 }else {
-                    hc.deleteRoom(Integer.valueOf(deleteNum.getText()));
-                    JOptionPane.showMessageDialog(null, "강의실이 삭제되었습니다.", "삭제", JOptionPane.PLAIN_MESSAGE);
-//                    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                  loggedInPanel.setVisible(false);
-                    refreshLoggedInPanel();
-                    dispose();
-                 } 
-           }
+	class GrantAdmin extends JFrame implements ActionListener{
+	      
+	      public GrantAdmin() {
+	         setSize(320, 150);
+	         
+	         JLabel number = new JLabel("User ID");
+	         number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         number.setBounds(30,50,100,25);
+	         
+	         deleteNum = new JTextField();
+	         deleteNum.setToolTipText("관리자 권한을 부여할 유저 ID를 입력하세요.");
+         
+	         deleteNum.setBounds(100,50,190,25);
+	         
+	         dBtn = new JButton("권한부여");
+	         dBtn.setBounds(40,100,100,20);
+	         dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         dBtn.setForeground(Color.BLACK);
+	         dBtn.setBackground(Color.LIGHT_GRAY);
+	         dBtn.addActionListener(this);
+	         dBtn.setBorderPainted(false);
+	         
+	         outBtn = new JButton("취소");
+	         outBtn.setBounds(180,100,100,20);
+	         outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	         outBtn.setForeground(Color.BLACK);
+	         outBtn.setBackground(Color.LIGHT_GRAY);
+	         outBtn.addActionListener(this);
+	         outBtn.setBorderPainted(false);
+	         
+	         add(number);
+	         add(deleteNum);
+	         add(dBtn);
+	         add(outBtn);
+	         setLayout(null);
+	         setLocationRelativeTo(null);
+	         setUndecorated(true);
+	         setVisible(true);
+	      }
+	      
+	      @Override
+	      public void actionPerformed(ActionEvent e) {
+	         System.out.println(deleteNum.getText());
+	         if (e.getSource() == outBtn) {
+	        	 dispose();
+	         }
+	         if (e.getSource() == dBtn) {
+		         if(deleteNum.getText().equals("")) {
+			            JOptionPane.showMessageDialog(null, "아이디를 입력하세요", "빈 내용", JOptionPane.WARNING_MESSAGE);
+			         }else {
+			            System.out.println(hc.patchGrantAdmin(deleteNum.getText()));
+			            JOptionPane.showMessageDialog(null, "해당 유저에게 권한이 부여되었습니다.", "완료", JOptionPane.PLAIN_MESSAGE);
+//			            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			    		loggedInPanel.setVisible(false);
+			            refreshLoggedInPanel();
+			            dispose();
+			         }
+ 
+	         }
 
-           
-        }
-        
-     }
-  
-  class GrantAdmin extends JFrame implements ActionListener{
-        
-        public GrantAdmin() {
-           setSize(320, 150);
-           
-           JLabel number = new JLabel("User ID");
-           number.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           number.setBounds(30,50,100,25);
-           
-           deleteNum = new JTextField();
-           deleteNum.setToolTipText("관리자 권한을 부여할 유저 ID를 입력하세요.");
-        
-           deleteNum.setBounds(100,50,190,25);
-           
-           dBtn = new JButton("권한부여");
-           dBtn.setBounds(40,100,100,20);
-           dBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           dBtn.setForeground(Color.BLACK);
-           dBtn.setBackground(Color.LIGHT_GRAY);
-           dBtn.addActionListener(this);
-           dBtn.setBorderPainted(false);
-           
-           outBtn = new JButton("취소");
-           outBtn.setBounds(180,100,100,20);
-           outBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-           outBtn.setForeground(Color.BLACK);
-           outBtn.setBackground(Color.LIGHT_GRAY);
-           outBtn.addActionListener(this);
-           outBtn.setBorderPainted(false);
-           
-           add(number);
-           add(deleteNum);
-           add(dBtn);
-           add(outBtn);
-           setLayout(null);
-           setLocationRelativeTo(null);
-           setUndecorated(true);
-           setVisible(true);
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-           System.out.println(deleteNum.getText());
-           if (e.getSource() == outBtn) {
-              dispose();
-           }
-           if (e.getSource() == dBtn) {
-              if(deleteNum.getText().equals("")) {
-                    JOptionPane.showMessageDialog(null, "아이디를 입력하세요", "빈 내용", JOptionPane.WARNING_MESSAGE);
-                 }else {
-                    System.out.println(hc.patchGrantAdmin(deleteNum.getText()));
-                    JOptionPane.showMessageDialog(null, "해당 유저에게 권한이 부여되었습니다.", "완료", JOptionPane.PLAIN_MESSAGE);
-//                    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                  loggedInPanel.setVisible(false);
-                    refreshLoggedInPanel();
-                    dispose();
-                 }
-
-           }
-
-           
-        }
-        
-     }
-  
-  
+	         
+	      }
+	      
+	   }
 	
 	
 	public void deleteLoggedInPanel() {
@@ -1775,7 +1840,11 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		seatsPanel.setBackground(Color.white);
 		
 		
-	    selectHintLabel.setVisible(true);
+	    selectHintLabel = new AntialiasedLabel("");
+	    selectHintLabel.setIcon(new ImageIcon(MainLogin.class.getResource("/image/SelectHintLabel.jpg")));
+	    selectHintLabel.setLayout(null);
+	    selectHintLabel.setBounds(0,468,350,22);
+	    add(selectHintLabel);
 	    remove(roomHintLabel);
 		remove(roomPanelLabel);
 		add(seatsPanel);

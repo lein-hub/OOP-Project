@@ -285,7 +285,7 @@ class SeatsPanel extends JPanel {
 			          this.add(noBtn);
 			          this.setUndecorated(true);
 	        	  } else {
-	        		  topLabel.setText("이미 이 방에 예약한 자리가 있습니다.");
+	        		  topLabel.setText("이미 예약된 자리입니다.");
 	        		  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 10));
 	        		  topLabel.setBounds(45,20,210,40);
 			          noBtn = new JButton("돌아가기");
