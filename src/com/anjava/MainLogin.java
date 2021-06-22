@@ -45,7 +45,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 	JPanel logInLabelPanel = new JPanel();
 	SignUpPanel signUpPanel = new SignUpPanel();
 	JLabel[] logInLabels = new JLabel[signUpPanel.categories.length];
-	JPanel seatsPanel;
+	SeatsPanel seatsPanel;
 	JSONArray roomsData;
 	int currentRoomNumber, xDrag, yDrag, xPress, yPress;
 
@@ -273,9 +273,7 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				seatsPanel.setVisible(false);
-				remove(selectHintLabel);
-				addSeats(currentRoomNumber);
+				refreshSeatsPanel();
 				
 			}
 	    	  
@@ -393,6 +391,12 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
 		addLoggedInPanel();
 		
 	}
+	
+	public void refreshSeatsPanel() {
+		seatsPanel.setVisible(false);
+		remove(selectHintLabel);
+		addSeats(currentRoomNumber);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -419,7 +423,8 @@ public class MainLogin extends JFrame implements ActionListener, KeyListener{
         		public void actionPerformed(ActionEvent e) {
 	        		
 	        		
-        			JSONObject roomData = new JSONObject(hc.getOneRoom(currentRoomNumber)).getJSONObject("data").getJSONObject("roomData");
+//        			JSONObject roomData = new JSONObject(hc.getOneRoom(currentRoomNumber)).getJSONObject("data").getJSONObject("roomData");
+	        		JSONObject roomData = seatsPanel.getRoomData();
         			new UpdateRoom(currentRoomNumber, roomData);
         			
         		}

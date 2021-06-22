@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,7 +25,9 @@ import org.json.JSONObject;
 class SeatsPanel extends JPanel {
 	public JPanel buttonPanel = new JPanel();
 		
-	   
+	public JPanel getThis() {
+  	  return this;
+    }
 
 	   HttpCaller hc;
 	   boolean isAdmin =true;
@@ -33,9 +36,14 @@ class SeatsPanel extends JPanel {
 	    
 	//   static JPanel mainPanel;
 	   
-//	   
+	   public JSONObject roomData;
 
-	   int column;
+	   public JSONObject getRoomData() {
+		return roomData;
+	}
+
+
+	int column;
 	   int row;
 	   int maxseat;
 	   int roomNum;
@@ -63,7 +71,8 @@ class SeatsPanel extends JPanel {
 	      this.maxseat = this.column * this.row;
 	      this.isAdmin = hc.isAdmin();
 	      this.otherReservedSeats = otherReservedSeats;
-	      JSONObject reservedRooms = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData").getJSONObject("reservedData");
+	      this.roomData = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData");
+	      JSONObject reservedRooms = this.roomData.getJSONObject("reservedData");
 	      Set<String> set = reservedRooms.keySet();
 	      Iterator<String> iter = set.iterator();
 	      while (iter.hasNext()) {
@@ -168,7 +177,7 @@ class SeatsPanel extends JPanel {
 	      int index;
 	      int roomNum;
 	      int number;
-	      JSONObject roomData;
+	      JSONObject roomData = getRoomData();
 	      public yeyakok(int index, int number, int roomNum) {
 	    	  this.index = index;
 	    	  this.roomNum = roomNum;
@@ -177,7 +186,6 @@ class SeatsPanel extends JPanel {
 	    	  setSize(300,120);
 	          setLocationRelativeTo(null);
 	          topLabel = new JLabel();
-	          roomData = new JSONObject(hc.getOneRoom(roomNum)).getJSONObject("data").getJSONObject("roomData");
 	          
 	          if (btn[index].getStatus() == 0) {
 //	        	  setLayout(new BorderLayout());
@@ -251,7 +259,7 @@ class SeatsPanel extends JPanel {
 		          noBtn.addActionListener(this);
 		          noBtn.setBorderPainted(false);
 		          
-		          topLabel.setBounds(50,30,200,20);
+		          topLabel.setBounds(50,30,250,20);
 		          yesbtn.setBounds(20,70,80,20);
 		          noBtn.setBounds(200,70,80,20);
 		          this.add(topLabel);
@@ -261,7 +269,7 @@ class SeatsPanel extends JPanel {
 	          } else {
 	        	  if (isAdmin) {
 	        		  topLabel.setText(number+" 번 좌석을 예약 취소하시겠습니까?");
-		        	  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 11));
+		        	  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 12));
 		        	  
 			          yesbtn = new JButton("네");
 			          yesbtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
@@ -277,7 +285,7 @@ class SeatsPanel extends JPanel {
 			          noBtn.addActionListener(this);
 			          noBtn.setBorderPainted(false);
 			          
-			          topLabel.setBounds(50,30,200,20);
+			          topLabel.setBounds(50,30,250,20);
 			          yesbtn.setBounds(20,70,80,20);
 			          noBtn.setBounds(200,70,80,20);
 			          this.add(topLabel);
@@ -286,8 +294,8 @@ class SeatsPanel extends JPanel {
 			          this.setUndecorated(true);
 	        	  } else {
 	        		  topLabel.setText("이미 예약된 자리입니다.");
-	        		  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 10));
-	        		  topLabel.setBounds(45,20,210,40);
+	        		  topLabel.setFont(new Font("HY견고딕", Font.PLAIN, 12));
+	        		  topLabel.setBounds(87,20,210,40);
 			          noBtn = new JButton("돌아가기");
 			          noBtn.setFont(new Font("HY견고딕", Font.PLAIN, 12));
 			          noBtn.setForeground(Color.BLACK);
@@ -304,32 +312,43 @@ class SeatsPanel extends JPanel {
 	         
 	          
 	      }
+	      
+	      
 
 	      @Override
 	      public void actionPerformed(ActionEvent e) {
 	    	  if(e.getSource()==yesbtn) {
-	    		  if (btn[index].getStatus() == 0) {
-//	    			  btn[index].addMouseListener(this);
-			          btn[index].setBackground(Color.orange);
-			          hc.postReserveRoom(this.roomNum, this.number);
-			          btn[index].setStatus(1);
-			          myReservedSeat = this.number;
-			          new ok("예약이 완료되었습니다.");
-	    		  } else if (btn[index].getStatus() == 1) {
-			          btn[index].setBackground(new Color(255,170,170));
-			          System.out.println(hc.deleteReserveRoom(this.roomNum, this.number));
-			          btn[index].setStatus(0);
-			          myReservedSeat = 0;
-			          new ok("예약이 취소되었습니다.");
-	    		  } else {
+	    		  if (btn[index].getStatus() == 0) {  // 빈자리를 눌렀을 때
+//			          btn[index].setBackground(Color.orange);
+			          JSONObject res = new JSONObject(hc.postReserveRoom(this.roomNum, this.number));
+			          System.out.println(res);
+			          MainLogin ml = (MainLogin) SwingUtilities.getAncestorOfClass(MainLogin.class, getThis());
+			          ml.refreshSeatsPanel();
+//			          btn[index].setStatus(1);
+//			          myReservedSeat = this.number;
+			          
+			          new ok(res.getString("message"));
+	    		  } else if (btn[index].getStatus() == 1) { // 내 자리를 눌렀을 때
+//			          btn[index].setBackground(new Color(255,170,170));
+			          JSONObject res = new JSONObject(hc.deleteReserveRoom(this.roomNum, this.number));
+			          System.out.println(res);
+			          MainLogin ml = (MainLogin) SwingUtilities.getAncestorOfClass(MainLogin.class, getThis());
+			          ml.refreshSeatsPanel();
+//			          btn[index].setStatus(0);
+//			          myReservedSeat = 0;
+			          new ok(res.getString("message"));
+	    		  } else { // 남의 자리를 눌렀을 때
 	    			  if (isAdmin) {
-				          btn[index].setBackground(new Color(255,170,170));
+//				          btn[index].setBackground(new Color(255,170,170));
 				          System.out.println(this.roomData.getJSONObject("reservedData").getString(String.valueOf(this.number)));
 				          System.out.println(roomNum);
 				          System.out.println(this.number);
-				          System.out.println(hc.deleteReserveRoom(this.roomData.getJSONObject("reservedData").getString(String.valueOf(this.number)), this.roomNum, this.number));
-				          btn[index].setStatus(0);
-				          new ok("예약이 취소되었습니다.");
+				          JSONObject res = new JSONObject(hc.deleteReserveRoom(this.roomData.getJSONObject("reservedData").getString(String.valueOf(this.number)), this.roomNum, this.number));
+				          System.out.println(res);
+				          MainLogin ml = (MainLogin) SwingUtilities.getAncestorOfClass(MainLogin.class, getThis());
+				          ml.refreshSeatsPanel();
+//				          btn[index].setStatus(0);
+				          new ok(res.getString("message"));
 	    			  }
 	    		  }
 	    		  
@@ -356,7 +375,7 @@ class SeatsPanel extends JPanel {
 	          setLayout(null);
 	          lb=new JLabel(message);
 	          lb.setFont(new Font("HY견고딕", Font.PLAIN, 12));
-	          lb.setBounds(85,20,130,20);
+	          lb.setBounds(85,20,200,20);
 	          okButton=new JButton("확인");
 	          okButton.setFont(new Font("HY견고딕", Font.PLAIN, 12));
 	          okButton.setForeground(Color.BLACK);
