@@ -7,15 +7,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import javax.swing.*;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class LoggedInPanel extends JPanel{
 	int boxCount;
